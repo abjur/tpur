@@ -2,7 +2,7 @@
 title: "Atualizaçao das tabelas"
 author: "Associação Brasileira de Jurimetria"
 date: "13 de dezembro de 2016"
-output: pdf_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
