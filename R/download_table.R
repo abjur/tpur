@@ -1,9 +1,20 @@
 download_table <-
-function(type, level, arq = tempfile(), return_file = F){
+function(type, crt, lvl, arq = tempfile(), return_file = F){
   
   type %<>% type_fix() 
+  crt %<>% court_fix()
+  lvl %<>% level_fix()
   
-  session <- httr::GET(u)
+  u <- tpur::table_links %>% 
+    filter(table_type == type,
+           court == crt,
+           level == lvl)
+  
+  if(nrow(u) == 0){
+    error("Não há tabela com essas configurações.")
+  } else {
+    u <- u$link[1]
+  }
   
   httr::GET(u, httr::config(ssl_verifypeer = FALSE), httr::write_disk(arq))
   

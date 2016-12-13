@@ -7,10 +7,58 @@ function(type){
   classe <- "clas"
   assunto <- "ass"
   
-  test_if(str_detect(type, movs)) %>% 
-    if_true("Movimentos") %>% if_false() %>%
-    test_if(str_detect(type, classe)) %>%
-    if_true("Classes") %>% if_false() %>%
-    test_if(str_detect(type, assunto)) %>% 
-    if_true("Assuntos") %>% if_false('')
+  ifelser::test_if(stringr::str_detect(type, movs)) %>% 
+    ifelser::if_true("Movimentos") %>% ifelser::if_false() %>%
+    ifelser::test_if(stringr::str_detect(type, classe)) %>%
+    ifelser::if_true("Classes") %>% ifelser::if_false() %>%
+    ifelser::test_if(stringr::str_detect(type, assunto)) %>% 
+    ifelser::if_true("Assuntos") %>% ifelser::if_false('')
+}
+
+court_fix <-
+  function(court){
+    
+    type <- tolower(court)
+    
+    estadual <- "est"
+    federal <- "fed"
+    eleitoral <- "ele"
+    militar <- "mil"
+
+    ifelser::test_if(stringr::str_detect(court, estadual)) %>% 
+      ifelser::if_true("Justica_Estadual") %>% ifelser::if_false() %>%
+      ifelser::test_if(stringr::str_detect(court, federal)) %>%
+      ifelser::if_true("Justica_Federal") %>% ifelser::if_false() %>%
+      ifelser::test_if(stringr::str_detect(court, eleitoral)) %>% 
+      ifelser::if_true("Justica_Eleitoral") %>% ifelser::if_false() %>% 
+      ifelser::test_if(stringr::str_detect(court, militar)) %>% 
+      ifelser::if_true("Justica_Militar_Estadual") %>% ifelser::if_false() %>% 
+      ifelser::test_if(stringr::str_detect(court, "cnj")) %>% 
+      ifelser::if_true("CNJ") %>% ifelser::if_false() %>% 
+      ifelser::test_if(stringr::str_detect(court, "stf")) %>% 
+      ifelser::if_true("STF") %>% ifelser::if_false() %>% 
+      ifelser::test_if(stringr::str_detect(court, "cjf")) %>% 
+      ifelser::if_true("CJF") %>% ifelser::if_false() %>% 
+      ifelser::test_if(stringr::str_detect(court, "stj")) %>% 
+      ifelser::if_true("STJ") %>% ifelser::if_false('')
+}
+
+level_fix <-
+  function(level){
+    
+    level <- tolower(level)
+    
+    prim_grau <- "primeiro ?grau|1º? ?grau|1 ?grau"
+    sec_grau <- "segundo ?grau|2º? ?grau|2 ?grau"
+    especial <- "esp"
+    recursal <- "rec"
+    
+    ifelser::test_if(stringr::str_detect(level, prim_grau)) %>% 
+      ifelser::if_true("_1_Grau") %>% ifelser::if_false() %>%
+      ifelser::test_if(stringr::str_detect(level, sec_grau)) %>%
+      ifelser::if_true("_2_Grau") %>% ifelser::if_false() %>%
+      ifelser::test_if(stringr::str_detect(level, especial)) %>% 
+      ifelser::if_true("_Juizado_Especial") %>% ifelser::if_false() %>% 
+      ifelser::test_if(stringr::str_detect(level, recursal)) %>% 
+      ifelser::if_true("_Turmas_Recursais") %>% ifelser::if_false('')
 }
