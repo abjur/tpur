@@ -1,3 +1,10 @@
+#' Transforms the raw table file in something better.
+#' 
+#' @param arq A string containing the path to the raw table.
+#' @return The raw table in tibble format with cleaned names and more intelligible tree format.
+#' @examples
+#' build_table(download_table("mov","estadual","1º grau"))
+#' build_table(download_table("mov","federal","1º grau"))
 download_table <-
 function(type, crt, lvl, arq = tempfile(), return_file = T){
   
