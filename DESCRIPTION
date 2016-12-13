@@ -16,6 +16,10 @@ Imports:
     xml2,
     tibble,
     tidyr,
-    bnlearn
+    bnlearn,
+    magrittr
 Remotes: dfalbel/ifelser
 RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

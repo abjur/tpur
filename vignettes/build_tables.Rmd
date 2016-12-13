@@ -1,0 +1,123 @@
+---
+title: "Atualizaçao das tabelas"
+author: "Associação Brasileira de Jurimetria"
+date: "13 de dezembro de 2016"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+
+library(dplyr)
+
+
+knitr::opts_chunk$set(echo = T, warning = F, result = F, eval = F)
+```
+
+# Task
+
+Essa vignette contém os códigos que baixa e atualiza as Tabelas Processuais Unificadas (TPU) do CNJ, a partir do conteudo do conteúdo do data_frame table_links deste pacote.
+
+# Lista de tabelas
+
+Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \ref{tab:table_links}.
+
+```{r table_links}
+
+  tpur::table_links %>% 
+  knitr::kable(format = 'markdown')
+
+```
+
+# Download e arrumação das tabelas
+
+## Justiça Estadual 
+
+```{r table_links_estadual, eval = T}
+
+  tpur::table_links %>% 
+    dplyr::filter(court == "Justica_Estadual") %>% 
+    knitr::kable(format = 'markdown')
+
+```
+
+```{r}
+
+  arquivos <- expand.grid(type = c("ass","movs","class"),
+                         crt = c("estadual"),
+                         lvl = c("primeiro grau",
+                                 "segundo grau",
+                                 "juizado especial",
+                                 "turmas recursais")) %>% 
+  plyr::mdply(.fun = download_table) %>% 
+  dplyr::group_by(V1) %>% 
+  dplyr::do(tpu = build_table(.$V1))
+
+``` 
+
+## Justiça Federal
+
+```{r table_links_federal, eval = T}
+
+  tpur::table_links %>% 
+    dplyr::filter(court == "Justica Federal") %>% 
+    knitr::kable(format = 'markdown')
+
+```
+
+```{r}
+
+  arquivos <- expand.grid(type = c("ass","movs","class"),
+                         crt = c("federal"),
+                         lvl = c("primeiro grau",
+                                 "segundo grau",
+                                 "juizado especial",
+                                 "turmas recursais")) %>% 
+  plyr::mdply(.fun = download_table) %>% 
+  dplyr::group_by(V1) %>% 
+  dplyr::do(tpu = build_table(.$V1))
+
+```
+
+## Justiça Militar
+
+```{r table_links_militar, eval = T}
+
+  tpur::table_links %>% 
+    dplyr::filter(court %in% c("Justica Militar Uniao",
+                               "Justica Militar Estadual")) %>% 
+    knitr::kable(format = 'markdown')
+
+```
+
+```{r}
+
+  arquivos <- expand.grid(type = c("ass","movs","class"),
+                         crt = c("militar estadual","militar federal"),
+                         lvl = c("primeiro grau",
+                                 "segundo grau")) %>% 
+  plyr::mdply(.fun = download_table) %>% 
+  dplyr::group_by(V1) %>% 
+  dplyr::do(tpu = build_table(.$V1))
+
+```
+
+## Instâncias superiores
+
+```{r table_links_superior, eval = T}
+
+  tpur::table_links %>% 
+    dplyr::filter(court %in% c("STF","CJF","STJ","CNJ")) %>% 
+    knitr::kable(format = 'markdown')
+
+```
+
+```{r}
+
+  instancias_superiores <- expand.grid(type = c("ass","movs","class"),
+                         crt = c("stf","cjf","stf","cnj"),
+                         lvl = c("")) %>% 
+  plyr::mdply(.fun = download_table) %>% 
+  dplyr::group_by(V1) %>% 
+  dplyr::do(tpu = build_table(.$V1))
+
+```

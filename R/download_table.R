@@ -1,5 +1,5 @@
 download_table <-
-function(type, crt, lvl, arq = tempfile(), return_file = F){
+function(type, crt, lvl, arq = tempfile(), return_file = T){
   
   type %<>% type_fix() 
   crt %<>% court_fix()
@@ -11,11 +11,14 @@ function(type, crt, lvl, arq = tempfile(), return_file = F){
            level == lvl)
   
   if(nrow(u) == 0){
-    error("Não há tabela com essas configurações.")
+    stop("Não há tabela com essas configurações.")
   } else {
     u <- u$link[1]
   }
   
   httr::GET(u, httr::config(ssl_verifypeer = FALSE), httr::write_disk(arq))
   
+  if(return_file){
+    arq
+  }
 }
