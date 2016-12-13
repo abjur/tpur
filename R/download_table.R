@@ -1,10 +1,11 @@
-#' Transforms the raw table file in something better.
+#' Downloads the Unified Processual Table.
 #' 
-#' @param arq A string containing the path to the raw table.
-#' @return The raw table in tibble format with cleaned names and more intelligible tree format.
+#' @param type String containing the type of the table.
+#' @param crt String containing the court of the table.
+#' @param lvl String containing the level of the table.
+#' @return The path of the download file.
 #' @examples
-#' build_table(download_table("mov","estadual","1º grau"))
-#' build_table(download_table("mov","federal","1º grau"))
+#' download_table("mov","estadual","1º grau")
 download_table <-
 function(type, crt, lvl, arq = tempfile(), return_file = T){
   

@@ -1,3 +1,7 @@
+#' Replaces NA's names in a data frame columns list.
+#' 
+#' @param d a data frame.
+#' @return d with different columns names.
 name_fix <-
 function(d){
   old_names <- names(d)

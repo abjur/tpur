@@ -1,3 +1,8 @@
+#' Replaces every NA in some columns by the last non null string observed.
+#' 
+#' @param d a data frame.
+#' @return d with different columns names.
+
 roll_down_on_null <-
 function(d, ...){
   

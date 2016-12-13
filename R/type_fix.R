@@ -1,3 +1,7 @@
+#' Replaces every NA in some columns by the last non null string observed.
+#' 
+#' @param d a data frame.
+#' @return d with different columns names.
 type_fix <-
 function(type){
   
@@ -15,6 +19,10 @@ function(type){
     ifelser::if_true("Assuntos") %>% ifelser::if_false('')
 }
 
+#' Replaces every NA in some columns by the last non null string observed.
+#' 
+#' @param d a data frame.
+#' @return d with different columns names.
 court_fix <-
   function(court){
     
@@ -47,6 +55,10 @@ court_fix <-
       ifelser::if_true("STJ") %>% ifelser::if_false('')
 }
 
+#' Replaces every NA in some columns by the last non null string observed.
+#' 
+#' @param d a data frame.
+#' @return d with different columns names.
 level_fix <-
   function(level){
     
