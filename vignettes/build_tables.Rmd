@@ -15,13 +15,13 @@ knitr::opts_chunk$set(echo = T, warning = F, result = F, eval = F)
 
 # Task
 
-Essa vignette contém os códigos que baixa e atualiza as Tabelas Processuais Unificadas (TPU) do CNJ, a partir do conteudo do conteúdo do data_frame table_links deste pacote.
+Essa vignette contém os códigos do pacote tpur que baixam e atualizam as Tabelas Processuais Unificadas (TPU's) do Conselho Nacional de Justiça (CNJ). O principal insumo desse código é o conteúdo do data_frame table_links deste pacote.
 
 # Lista de tabelas
 
 Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \ref{tab:table_links}.
 
-```{r table_links}
+```{r table_links, eval = T}
 
   tpur::table_links %>% 
   knitr::kable(format = 'markdown')
