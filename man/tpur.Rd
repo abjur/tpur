@@ -4,9 +4,9 @@
 \name{tpur}
 \alias{tpur}
 \alias{tpur-package}
-\title{tpur: A package for acessing the Unified Processual Tables from the brazillian National Justice Council.}
+\title{tpur: Brazilian Unified Procedural Tables in R}
 \description{
-tpur: A package for acessing the Unified Processual Tables from the brazillian National Justice Council.
+Download and access tables containing general purpose classifications for brazilian legal processes, providing some pre-processing as well
 }
 \section{tpur functions}{
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/download_table.R
 \name{download_table}
 \alias{download_table}
-\title{Downloads the Unified Processual Table.}
+\title{Downloads the Unified Procedural Table.}
 \usage{
 download_table(type, crt, lvl, arq = tempfile(), return_file = T)
 }
@@ -17,7 +17,7 @@ download_table(type, crt, lvl, arq = tempfile(), return_file = T)
 The path of the download file.
 }
 \description{
-Downloads the Unified Processual Table.
+Downloads the Unified Procedural Table.
 }
 \examples{
 download_table("mov","estadual","1º grau")

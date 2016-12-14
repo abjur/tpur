@@ -3,22 +3,22 @@
 \docType{data}
 \name{table_links}
 \alias{table_links}
-\title{Prices of 50,000 round cut diamonds.}
-\format{A data frame with 53940 rows and 10 variables:
+\title{List of available tables and its links.}
+\format{A data frame with 75 rows and 8 variables
 \describe{
-  \item{price}{price, in US dollars}
-  \item{carat}{weight of the diamond, in carats}
+  \item{link}{URL for table download.}
+  \item{table_type}{Classes, subjects of moves.}
   ...
 }}
 \source{
-\url{http://www.diamondse.info/}
+\url{https://www.cnj.jus.br/sgt/versoes.php}
 }
 \usage{
 table_links
 }
 \description{
-A dataset containing the prices and other attributes of almost 54,000
-diamonds.
+Dataset containing a list of the available tables, its links and
+columns describing administrative boundaries.
 }
 \keyword{datasets}
 

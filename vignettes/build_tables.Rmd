@@ -42,7 +42,7 @@ Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \r
 
 ```{r}
 
-  arquivos <- expand.grid(type = c("ass","movs","class"),
+  arquivos_estadual <- expand.grid(type = c("assuntos","movs","classes"),
                          crt = c("estadual"),
                          lvl = c("primeiro grau",
                                  "segundo grau",
@@ -50,7 +50,10 @@ Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \r
                                  "turmas recursais")) %>% 
   plyr::mdply(.fun = download_table) %>% 
   dplyr::group_by(V1) %>% 
-  dplyr::do(tpu = build_table(.$V1))
+  dplyr::do(type = .$type,
+            crt = .$crt,
+            lvl = .$lvl,
+            tpu = build_table(.$V1))
 
 ``` 
 
@@ -66,7 +69,7 @@ Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \r
 
 ```{r}
 
-  arquivos <- expand.grid(type = c("ass","movs","class"),
+  arquivos_federal <- expand.grid(type = c("ass","movs","class"),
                          crt = c("federal"),
                          lvl = c("primeiro grau",
                                  "segundo grau",
@@ -74,7 +77,10 @@ Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \r
                                  "turmas recursais")) %>% 
   plyr::mdply(.fun = download_table) %>% 
   dplyr::group_by(V1) %>% 
-  dplyr::do(tpu = build_table(.$V1))
+  dplyr::do(type = .$type,
+            crt = .$crt,
+            lvl = .$lvl,
+            tpu = build_table(.$V1))
 
 ```
 
@@ -91,13 +97,16 @@ Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \r
 
 ```{r}
 
-  arquivos <- expand.grid(type = c("ass","movs","class"),
+  arquivos_militar <- expand.grid(type = c("ass","movs","class"),
                          crt = c("militar estadual","militar federal"),
                          lvl = c("primeiro grau",
                                  "segundo grau")) %>% 
   plyr::mdply(.fun = download_table) %>% 
   dplyr::group_by(V1) %>% 
-  dplyr::do(tpu = build_table(.$V1))
+  dplyr::do(type = .$type,
+            crt = .$crt,
+            lvl = .$lvl,
+            tpu = build_table(.$V1))
 
 ```
 
@@ -118,6 +127,37 @@ Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \r
                          lvl = c("")) %>% 
   plyr::mdply(.fun = download_table) %>% 
   dplyr::group_by(V1) %>% 
-  dplyr::do(tpu = build_table(.$V1))
+  dplyr::do(type = .$type,
+            crt = .$crt,
+            lvl = .$lvl,
+            tpu = build_table(.$V1))
+
+```
+
+# Consolida tabelas
+
+```{r}
+
+est <- arquivos_estadual %>% 
+  tidyr::unnest(type, crt, lvl) %>% 
+  mutate(file_name = gsub(" ", "_", paste(type,crt,lvl, sep = "_"))) %>% 
+  select(tpu, file_name)
+
+fed <- arquivos_federal %>% 
+  tidyr::unnest(type, crt, lvl) %>% 
+  mutate(file_name = gsub(" ", "_", paste(type,crt,lvl, sep = "_"))) %>% 
+  select(tpu, file_name)
+
+mil <- arquivos_militar %>% 
+  tidyr::unnest(type, crt, lvl) %>% 
+  mutate(file_name = gsub(" ", "_", paste(type,crt,lvl, sep = "_"))) %>% 
+  select(tpu, file_name)
+
+sup <- instancias_superiores %>% 
+  tidyr::unnest(type, crt, lvl) %>% 
+  mutate(file_name = gsub(" ", "_", paste(type,crt,lvl, sep = "_"))) %>% 
+  select(tpu, file_name)
+
+table_tpu <- bind_rows(est,fed,mil,sup)
 
 ```
