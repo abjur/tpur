@@ -1,4 +1,4 @@
-#' Downloads the Unified Processual Table.
+#' Downloads the Unified Procedural Table.
 #' 
 #' @param type String containing the type of the table.
 #' @param crt String containing the court of the table.
