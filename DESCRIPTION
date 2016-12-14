@@ -8,6 +8,7 @@ Maintainer:  <contato@abjur.org.br>
 Description: Download and access tables containing general purpose classifications for brazilian legal processes, providing some pre-processing as well
 License: MIT
 Encoding: UTF-8
+LazeData: true
 Imports:
     ifelser,
     dplyr,
