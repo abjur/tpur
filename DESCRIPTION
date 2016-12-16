@@ -4,7 +4,7 @@ Title: Brazilian Unified Procedural Tables in R
 Version: 1.0
 Date: 2016-12-13
 Author: Brazilian Jurimetrics Association
-Maintainer:  <contato@abjur.org.br>
+Maintainer: <contato@abjur.org.br>
 Description: Download and access tables containing general purpose classifications for brazilian legal processes, providing some pre-processing as well
 License: MIT
 Encoding: UTF-8
@@ -18,8 +18,13 @@ Imports:
     tibble,
     tidyr,
     bnlearn,
-    magrittr
-Remotes: dfalbel/ifelser
+    magrittr,
+    httr,
+    janitor,
+    lazyeval,
+    XML
+Remotes: dfalbel/ifelser,
+         abjur/abjutils
 RoxygenNote: 5.0.1
 Suggests: knitr,
     rmarkdown
