@@ -22,8 +22,9 @@ Imports:
     httr,
     janitor,
     lazyeval,
-    XML
-Remotes: 
+    XML,
+    abjutils
+Remotes:
     dfalbel/ifelser,
     abjur/abjutils
 RoxygenNote: 5.0.1
