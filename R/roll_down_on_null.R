@@ -11,7 +11,7 @@ function(d, ...){
   
   d_aux <- d %>%
     dplyr::select(...) %>%
-    dplyr::mutate_each(funs(cumsum(!(.==''))))
+    dplyr::mutate_each(dplyr::funs(cumsum(!(.==''))))
   
   for(ii in 2:ncol(d_aux)){
     d_aux[,ii] = d_aux[,ii] +

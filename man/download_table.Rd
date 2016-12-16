@@ -20,6 +20,6 @@ The path of the download file.
 Downloads the Unified Procedural Table.
 }
 \examples{
-download_table("mov","estadual","1º grau")
+library(tpur); download_table("mov","estadual","1º grau")
 }
 

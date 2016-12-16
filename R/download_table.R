@@ -1,20 +1,23 @@
 #' Downloads the Unified Procedural Table.
 #' 
+#' @importFrom magrittr %<>%
+#' @importFrom magrittr %>%
+#' 
 #' @param type String containing the type of the table.
 #' @param crt String containing the court of the table.
 #' @param lvl String containing the level of the table.
 #' @return The path of the download file.
 #' @examples
-#' download_table("mov","estadual","1º grau")
-download_table <-
-function(type, crt, lvl, arq = tempfile(), return_file = T){
+#' library(tpur); download_table("mov","estadual","1º grau")
+#' @export
+download_table <-function(type, crt, lvl, arq = tempfile(), return_file = T){
   
   type %<>% type_fix() 
   crt %<>% court_fix()
   lvl %<>% level_fix()
   
-  u <- tpur::table_links %>% 
-    filter(table_type == type,
+  u <- table_links %>% 
+    dplyr::filter(table_type == type,
            court == crt,
            level == lvl)
   

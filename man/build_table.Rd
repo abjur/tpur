@@ -16,7 +16,7 @@ The raw table in tibble format with cleaned names and more intelligible tree for
 Transforms the raw table file in something better.
 }
 \examples{
-build_table(download_table("mov","estadual","1º grau"))
-build_table(download_table("mov","federal","1º grau"))
+
+library(tpur); build_table(download_table("mov","estadual","1º grau"));build_table(download_table("mov","federal","1º grau"))
 }
 
