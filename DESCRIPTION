@@ -23,8 +23,9 @@ Imports:
     janitor,
     lazyeval,
     XML
-Remotes: dfalbel/ifelser,
-         abjur/abjutils
+Remotes: 
+    dfalbel/ifelser,
+    abjur/abjutils
 RoxygenNote: 5.0.1
 Suggests: knitr,
     rmarkdown
