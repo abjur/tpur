@@ -8,7 +8,7 @@
 #' @param lvl String containing the level of the table.
 #' @return The path of the download file.
 #' @examples
-#' library(tpur); download_table("mov","estadual","1º grau")
+#' library(tpur); download_table("mov","estadual","1 grau")
 #' @export
 download_table <-function(type, crt, lvl, arq = tempfile(), return_file = T){
   
@@ -22,7 +22,7 @@ download_table <-function(type, crt, lvl, arq = tempfile(), return_file = T){
            level == lvl)
   
   if(nrow(u) == 0){
-    stop("Não há tabela com essas configurações.")
+    stop("Não há tabela com essas configuracoes.")
   } else {
     u <- u$link[1]
   }

@@ -2,17 +2,17 @@
 % Please edit documentation in R/type_fix.R
 \name{type_fix}
 \alias{type_fix}
-\title{Replaces every NA in some columns by the last non null string observed.}
+\title{Transforms an expression in one of the available table_type's}
 \usage{
 type_fix(type)
 }
 \arguments{
-\item{d}{a data frame.}
+\item{type}{The base expression.}
 }
 \value{
-d with different columns names.
+The closes available table_type
 }
 \description{
-Replaces every NA in some columns by the last non null string observed.
+Transforms an expression in one of the available table_type's
 }
 

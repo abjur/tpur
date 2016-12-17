@@ -2,17 +2,17 @@
 % Please edit documentation in R/type_fix.R
 \name{level_fix}
 \alias{level_fix}
-\title{Replaces every NA in some columns by the last non null string observed.}
+\title{Transforms an expression in one of the available jurisdiction levels.}
 \usage{
 level_fix(level)
 }
 \arguments{
-\item{d}{a data frame.}
+\item{level}{The base expression.}
 }
 \value{
-d with different columns names.
+The closes available jurisdiction level.
 }
 \description{
-Replaces every NA in some columns by the last non null string observed.
+Transforms an expression in one of the available jurisdiction levels.
 }
 

@@ -2,17 +2,17 @@
 % Please edit documentation in R/type_fix.R
 \name{court_fix}
 \alias{court_fix}
-\title{Replaces every NA in some columns by the last non null string observed.}
+\title{Transforms an expression in one of the available courts}
 \usage{
 court_fix(court)
 }
 \arguments{
-\item{d}{a data frame.}
+\item{court}{The base expression.}
 }
 \value{
-d with different columns names.
+The closes available court.
 }
 \description{
-Replaces every NA in some columns by the last non null string observed.
+Transforms an expression in one of the available courts
 }
 

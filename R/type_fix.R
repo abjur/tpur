@@ -1,7 +1,7 @@
-#' Replaces every NA in some columns by the last non null string observed.
+#' Transforms an expression in one of the available table_type's
 #' 
-#' @param d a data frame.
-#' @return d with different columns names.
+#' @param type The base expression.
+#' @return The closes available table_type
 type_fix <-
 function(type){
   
@@ -19,10 +19,10 @@ function(type){
     ifelser::if_true("Assuntos") %>% ifelser::if_false('')
 }
 
-#' Replaces every NA in some columns by the last non null string observed.
+#' Transforms an expression in one of the available courts
 #' 
-#' @param d a data frame.
-#' @return d with different columns names.
+#' @param court The base expression.
+#' @return The closes available court.
 court_fix <-
   function(court){
     
@@ -55,24 +55,24 @@ court_fix <-
       ifelser::if_true("STJ") %>% ifelser::if_false('')
 }
 
-#' Replaces every NA in some columns by the last non null string observed.
+#' Transforms an expression in one of the available jurisdiction levels.
 #' 
-#' @param d a data frame.
-#' @return d with different columns names.
+#' @param level The base expression.
+#' @return The closes available jurisdiction level.
 level_fix <-
   function(level){
     
     level <- tolower(level)
     
-    prim_grau <- "primeiro grau|1º grau|1 grau|1grau"
-    sec_grau <- "segundo grau|2º grau|2 grau|2grau"
+    prim_grau <- "primeiro grau|1 grau|1grau"
+    sec_grau <- "segundo grau|2 grau|2grau"
     especial <- "esp"
     recursal <- "rec"
     
     ifelser::test_if(stringr::str_detect(level, prim_grau)) %>% 
-      ifelser::if_true("1º Grau") %>% ifelser::if_false() %>%
+      ifelser::if_true("1 Grau") %>% ifelser::if_false() %>%
       ifelser::test_if(stringr::str_detect(level, sec_grau)) %>%
-      ifelser::if_true("2º Grau") %>% ifelser::if_false() %>%
+      ifelser::if_true("2 Grau") %>% ifelser::if_false() %>%
       ifelser::test_if(stringr::str_detect(level, especial)) %>% 
       ifelser::if_true("Juizado Especial") %>% ifelser::if_false() %>% 
       ifelser::test_if(stringr::str_detect(level, recursal)) %>% 

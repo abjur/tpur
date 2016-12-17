@@ -7,8 +7,10 @@
 \format{A data frame with 75 rows and 8 variables
 \describe{
   \item{link}{URL for table download.}
-  \item{table_type}{Classes, subjects of moves.}
-  ...
+  \item{table_type}{Type of table. Available values are "Assuntos","Classes","Movimentos"}
+  \item{court}{Table's jurisdiction.}
+  \item{level}{Table's jurisdiction level.}
+  \item{status}{Status code of a GET requisition.}
 }}
 \source{
 \url{https://www.cnj.jus.br/sgt/versoes.php}
