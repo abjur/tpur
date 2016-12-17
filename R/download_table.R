@@ -16,7 +16,7 @@ download_table <-function(type, crt, lvl, arq = tempfile(), return_file = T){
   crt %<>% court_fix()
   lvl %<>% level_fix()
   
-  u <- control_table %>% 
+  u <- tpur::control_table %>% 
     dplyr::filter(table_type == type,
            court == crt,
            level == lvl)
