@@ -8,6 +8,8 @@ roll_down_on_null(d, ...)
 }
 \arguments{
 \item{d}{a data frame.}
+
+\item{...}{columns to be drilled down.}
 }
 \value{
 d with different columns names.

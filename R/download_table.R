@@ -6,6 +6,8 @@
 #' @param type String containing the type of the table.
 #' @param crt String containing the court of the table.
 #' @param lvl String containing the level of the table.
+#' @param arq A character string with the name where the downloaded file is saved.
+#' @param return_file Logical indicating whether or not the arq parameters should be returned.
 #' @return The path of the download file.
 #' @examples
 #' library(tpur); download_table("mov","estadual","1 grau")
@@ -16,13 +18,13 @@ download_table <-function(type, crt, lvl, arq = tempfile(), return_file = T){
   crt %<>% court_fix()
   lvl %<>% level_fix()
   
-  u <- tpur::control_table %>% 
+  u <- control_table %>% 
     dplyr::filter(table_type == type,
            court == crt,
            level == lvl)
   
   if(nrow(u) == 0){
-    stop("Não há tabela com essas configuracoes.")
+    stop("Nao ha tabela com essas configuracoes.")
   } else {
     u <- u$link[1]
   }

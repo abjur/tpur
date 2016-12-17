@@ -1,6 +1,7 @@
 #' Replaces every NA in some columns by the last non null string observed.
 #' 
 #' @param d a data frame.
+#' @param ... columns to be drilled down.
 #' @return d with different columns names.
 
 roll_down_on_null <-

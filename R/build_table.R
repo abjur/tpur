@@ -6,7 +6,9 @@
 #' @return The raw table in tibble format with cleaned names and more intelligible tree format.
 #' @examples
 #' 
-#' library(tpur); build_table(download_table("mov","estadual","1 grau"));build_table(download_table("mov","federal","1 grau"))
+#' library(tpur)
+#' build_table(download_table("mov","estadual","1 grau"))
+#' build_table(download_table("mov","federal","1 grau"))
 #' @export
 build_table <-function(arq){
   xml2::read_html(arq) %>%

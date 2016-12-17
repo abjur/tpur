@@ -5,9 +5,12 @@ Version: 1.0
 Date: 2016-12-13
 Author: Brazilian Jurimetrics Association
 Maintainer: <contato@abjur.org.br>
-Description: Download and access tables containing general purpose classifications for brazilian legal processes, providing some pre-processing as well
-License: MIT
+Description: Download and access tables containing general purpose classifications for brazilian legal processes, providing some pre-processing as well.
+LazyData: TRUE
+License: MIT + file LICENSE
 Encoding: UTF-8
+Depends: 
+    R (>= 3.1.2)
 Imports:
     ifelser,
     dplyr,

@@ -12,6 +12,10 @@ download_table(type, crt, lvl, arq = tempfile(), return_file = T)
 \item{crt}{String containing the court of the table.}
 
 \item{lvl}{String containing the level of the table.}
+
+\item{arq}{A character string with the name where the downloaded file is saved.}
+
+\item{return_file}{Logical indicating whether or not the arq parameters should be returned.}
 }
 \value{
 The path of the download file.
