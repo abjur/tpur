@@ -12,7 +12,7 @@
 #'   \item{status}{Status code of a GET requisition.}
 #' }
 #' @source \url{https://www.cnj.jus.br/sgt/versoes.php}
-"table_links"
+"control_table"
 
 #' List of UPT's 
 #'
