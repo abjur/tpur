@@ -4,11 +4,9 @@
 #' @param ... columns to be drilled down.
 #' @return d with different columns names.
 
-roll_down_on_null <-
-function(d, ...){
+roll_down_on_null <- function(d, ...){
   
-  n_nodes <- lazyeval::lazy_dots(...) %>%
-    length()
+  n_nodes <- lazyeval::lazy_dots(...) %>% length()
   
   d_aux <- d %>%
     dplyr::select(...) %>%
@@ -16,7 +14,7 @@ function(d, ...){
   
   for(ii in 2:ncol(d_aux)){
     d_aux[,ii] = d_aux[,ii] +
-      cumsum(c(0,diff(d_aux[,ii-1])))
+      cumsum(c(0, diff(d_aux[,ii-1])))
   }
   
   d_aux <- d_aux %>%
