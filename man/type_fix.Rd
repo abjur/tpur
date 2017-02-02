@@ -15,4 +15,3 @@ The closes available table_type
 \description{
 Transforms an expression in one of the available table_type's
 }
-

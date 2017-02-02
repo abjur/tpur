@@ -2,7 +2,7 @@
 % Please edit documentation in R/is_page_on.R
 \name{is_page_on}
 \alias{is_page_on}
-\title{Receives the status code of a GET requisition.}
+\title{Receives the status code of a GET request}
 \usage{
 is_page_on(x)
 }
@@ -10,12 +10,11 @@ is_page_on(x)
 \item{x}{The url to be requested.}
 }
 \value{
-The status code of the get requisiton.
+The status code of the get request.
 }
 \description{
-Receives the status code of a GET requisition.
+Receives the status code of a GET request
 }
 \examples{
 is_page_on("www.google.com")
 }
-

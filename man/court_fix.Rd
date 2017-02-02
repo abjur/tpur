@@ -15,4 +15,3 @@ The closes available court.
 \description{
 Transforms an expression in one of the available courts
 }
-

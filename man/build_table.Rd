@@ -21,4 +21,3 @@ library(tpur)
 build_table(download_table("mov","estadual","1 grau"))
 build_table(download_table("mov","federal","1 grau"))
 }
-

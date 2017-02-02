@@ -26,4 +26,3 @@ Downloads the Unified Procedural Table.
 \examples{
 library(tpur); download_table("mov","estadual","1 grau")
 }
-

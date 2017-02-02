@@ -20,4 +20,3 @@ Dataset containing every downloaded and pre-processed UPT
 nested in a data_frame column.
 }
 \keyword{datasets}
-

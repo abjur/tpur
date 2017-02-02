@@ -15,4 +15,3 @@ The closes available jurisdiction level.
 \description{
 Transforms an expression in one of the available jurisdiction levels.
 }
-

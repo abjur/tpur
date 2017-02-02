@@ -17,4 +17,3 @@ d with different columns names.
 \description{
 Replaces every NA in some columns by the last non null string observed.
 }
-

@@ -15,4 +15,3 @@ d with different columns names.
 \description{
 Replaces NA's names in a data frame columns list.
 }
-

@@ -15,4 +15,3 @@ A bnlearn type graph.
 \description{
 Creates a bnlearn's graph based on a its edges.
 }
-

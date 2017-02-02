@@ -15,4 +15,3 @@ A list with the edges of the table.
 \description{
 Returns a leaf list from a Unified Processual Table.
 }
-
