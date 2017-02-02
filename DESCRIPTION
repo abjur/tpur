@@ -9,7 +9,7 @@ Description: Download and access tables containing general purpose classificatio
 LazyData: TRUE
 License: MIT + file LICENSE
 Encoding: UTF-8
-Depends: 
+Depends:
     R (>= 3.1.2)
 Imports:
     ifelser,
@@ -26,11 +26,12 @@ Imports:
     janitor,
     lazyeval,
     XML,
-    abjutils
+    abjutils,
+    purrr
 Remotes:
     dfalbel/ifelser,
     abjur/abjutils
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.0
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
