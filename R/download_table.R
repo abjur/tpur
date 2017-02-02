@@ -20,8 +20,8 @@ download_table <-function(type, crt, lvl, arq = tempfile(), return_file = T){
   
   u <- control_table %>% 
     dplyr::filter(table_type == type,
-           court == crt,
-           level == lvl)
+                  court == crt,
+                  level == lvl)
   
   if(nrow(u) == 0){
     stop("Nao ha tabela com essas configuracoes.")
