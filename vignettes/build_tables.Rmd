@@ -23,7 +23,7 @@ Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \r
 
 ```{r table_links, eval = T}
 
-  tpur::table_links %>% 
+tpur::control_table %>% 
   knitr::kable(format = 'markdown')
 
 ```
@@ -34,7 +34,7 @@ Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \r
 
 ```{r table_links_estadual, eval = T}
 
-  tpur::table_links %>% 
+  tpur::control_table %>% 
     dplyr::filter(court == "Justica_Estadual") %>% 
     knitr::kable(format = 'markdown')
 
@@ -61,7 +61,7 @@ Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \r
 
 ```{r table_links_federal, eval = T}
 
-  tpur::table_links %>% 
+  tpur::control_table %>% 
     dplyr::filter(court == "Justica Federal") %>% 
     knitr::kable(format = 'markdown')
 
@@ -88,7 +88,7 @@ Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \r
 
 ```{r table_links_militar, eval = T}
 
-  tpur::table_links %>% 
+  tpur::control_table %>% 
     dplyr::filter(court %in% c("Justica Militar Uniao",
                                "Justica Militar Estadual")) %>% 
     knitr::kable(format = 'markdown')
@@ -110,11 +110,39 @@ Em 13/12/2016, as tabelas disponíveis e os seus respectivos links constam em \r
 
 ```
 
+## Justiça Trabalhista
+
+**Precisa implementar!!!**
+
+```{r table_links_militar, eval = T}
+
+  tpur::control_table %>% 
+    dplyr::filter(court %in% c("Justica do Trabalho")) %>% 
+    knitr::kable(format = 'markdown')
+
+```
+
+```{r}
+
+  # arquivos_trabal <- expand.grid(type = c("ass","movs","class"),
+  #                        crt = c("trabal"),
+  #                        lvl = c("primeiro grau",
+  #                                "segundo grau")) %>% 
+  # plyr::mdply(.fun = download_table) %>% 
+  # dplyr::group_by(V1) %>% 
+  # dplyr::do(type = .$type,
+  #           crt = .$crt,
+  #           lvl = .$lvl,
+  #           tpu = build_table(.$V1))
+
+```
+
+
 ## Instâncias superiores
 
 ```{r table_links_superior, eval = T}
 
-  tpur::table_links %>% 
+  tpur::control_table %>% 
     dplyr::filter(court %in% c("STF","CJF","STJ","CNJ")) %>% 
     knitr::kable(format = 'markdown')
 
