@@ -10,7 +10,7 @@
 #' build_table(download_table("mov","estadual","1 grau"))
 #' build_table(download_table("mov","federal","1 grau"))
 #' @export
-build_table <-function(arq){
+build_table <-function(arq) {
   html <- xml2::read_html(arq)
   titulos <- html %>% 
     rvest::html_nodes(xpath = '//tr[1]//td') %>% {
@@ -30,16 +30,33 @@ build_table <-function(arq){
     tibble::as_tibble() %>% 
     dplyr::mutate(codigo = abjutils::rm_accent(codigo),
                   codigo = gsub('[.,/\\]', '', codigo)) %>% 
-    # dplyr::filter(!stringr::str_detect(codigo, "[:alpha:]"), nchar(codigo) > 0) %>% 
     name_fix() %>%
     dplyr::mutate(nas = cumsum(!is.na(n1))) %>% 
     dplyr::filter(nas > 0) %>% 
     dplyr::select(-nas) %>% 
     dplyr::mutate_all(dplyr::funs(ifelse(is.na(.), '', .))) %>% 
-    roll_down_on_null(n1, n2, n3, n4, n5, n6) %>% 
-    dplyr::filter(codigo != '') %>% 
-    dplyr::mutate(folha = codigo %in% leaf_classifier(.)) 
+    add_leaf_flag() %>% 
+    dplyr::mutate_at(dplyr::vars(n1, n2, n3, n4, n5, n6),
+                     dplyr::funs(ifelse(. == '', NA_character_, .))) %>% 
+    dplyr::mutate(n6 = adicionar_um_abaixo(n6, folha == 'n6')) %>% 
+    dplyr::mutate(n5 = adicionar_um_abaixo(n5, folha == 'n5')) %>% 
+    dplyr::mutate(n4 = adicionar_um_abaixo(n4, folha == 'n4')) %>% 
+    dplyr::mutate(n3 = adicionar_um_abaixo(n3, folha == 'n3')) %>% 
+    dplyr::mutate(n2 = adicionar_um_abaixo(n2, folha == 'n2')) %>% 
+    dplyr::mutate(n1 = adicionar_um_abaixo(n1, folha == 'n1')) %>% 
+    tidyr::fill(n1, n2, n3, n4, n5, n6) %>% 
+    dplyr::filter(codigo != '', folha != '') %>% 
+    dplyr::mutate(folha = (folha != '')) %>% 
+    tidyr::replace_na(list(n1 = '', n2 = '', n3 = '', 
+                           n4 = '', n5 = '', n6 = ''))
   tab
+}
+
+adicionar_um_abaixo <- function(x, regra) {
+  onde <- dplyr::lag(!is.na(x), default = FALSE)
+  onde2 <- is.na(x)
+  x[onde & onde2 & dplyr::lag(regra, default = FALSE)] <- ''
+  x
 }
 
 arrumar_linha <- function(.x) {
