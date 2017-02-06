@@ -3,5 +3,6 @@
 export(build_table)
 export(download_table)
 export(is_page_on)
+export(tpu_assunto_prob)
 importFrom(magrittr,"%<>%")
 importFrom(magrittr,"%>%")
