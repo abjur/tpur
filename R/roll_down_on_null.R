@@ -12,7 +12,7 @@ roll_down_on_null <- function(d, ...){
     dplyr::select(...) %>%
     dplyr::mutate_each(dplyr::funs(cumsum(!(.==''))))
   
-  for(ii in 2:ncol(d_aux)){
+  for(ii in 2:ncol(d_aux)) {
     d_aux[,ii] = d_aux[,ii] +
       cumsum(c(0, diff(d_aux[,ii-1])))
   }
