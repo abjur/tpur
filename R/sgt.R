@@ -1,12 +1,12 @@
 # sgt_atuais
 
-download_sgt_atual <- function(tipo, path = "data-raw/sgt_atual") {
+sgt_atual_download <- function(tipo, path = "data-raw/sgt_atual") {
   u_sgt <- glue::glue("https://www.cnj.jus.br/sgt/versoes.php?tipo_tabela={tipo}")
   file <- glue::glue("{path}/sgt_{tipo}.html")
   r_sgt <- httr::GET(u_sgt, httr::write_disk(file, overwrite = TRUE))
 }
 
-parse_sgt_atual <- function(file) {
+sgt_atual_parse <- function(file) {
 
   html <- xml2::read_html(file)
   table <- html |> 
@@ -46,7 +46,7 @@ parse_sgt_atual <- function(file) {
 
 # sgt_anterior
 
-download_sgt_anterior <- function(tipo, path = "data-raw/sgt_anterior") {
+sgt_anterior_download <- function(tipo, path = "data-raw/sgt_anterior") {
   
   u_sgt <- glue::glue("https://www.cnj.jus.br/sgt/versoes_anteriores.php?tipo_tabela={tipo}")
   file <- glue::glue("{path}/sgt_{tipo}.html")
@@ -54,7 +54,7 @@ download_sgt_anterior <- function(tipo, path = "data-raw/sgt_anterior") {
   
 }
 
-parse_sgt_anterior <- function(file) {
+sgt_anterior_parse <- function(file) {
   
   html <- xml2::read_html(file)
   table <- html |> 
@@ -90,4 +90,61 @@ parse_sgt_anterior <- function(file) {
     )
   
   return(da)
+}
+
+sgt_tidy <- function(da) {
+  da |> 
+    dplyr::mutate(
+      tipo_abbr = tipo,
+      tipo = dplyr::case_when(
+        tipo == "A" ~ "Assuntos",
+        tipo == "C" ~ "Classes",
+        tipo == "M" ~ "Movimentos"
+      ),
+      justica_abbr = dplyr::case_when(
+        justica == "Justiça do Trabalho" ~ "JT",
+        justica == "Justiça Federal" ~ "JF",
+        justica == "Justiça Estadual" ~ "JEs",
+        justica == "Justiça Eleitoral" ~ "JEl",
+        justica == "Justiça Militar" ~ "JM",
+        justica == "Superiores" ~ "S",
+      ),
+      tabela = stringr::str_squish(tabela),
+      tabela_abbr = dplyr::case_when(
+        tabela == "Trabalho 1° Grau" ~ "1",
+        tabela == "Trabalho 2° Grau" ~ "2",
+        tabela == "Trabalho TST" ~ "S",
+        tabela == "Federal 1° Grau" ~ "1",
+        tabela == "Federal 2° Grau" ~ "2",
+        tabela == "Federal Juizado Especial" ~ "JEC",
+        tabela == "Federal Turmas Recursais" ~ "TR",
+        tabela == "Federal Turma Nacional de Uniformização" ~ "TNU",
+        tabela == "Federal Turma Regional de Uniformização" ~ "TRU",
+        tabela == "Estadual 1° Grau" ~ "1",
+        tabela == "Estadual 2° Grau" ~ "2",
+        tabela == "Estadual Juizado Especial" ~ "JEC",
+        tabela == "Estadual Turmas Recursais de Uniformização" ~ "TRU",
+        tabela == "Juizados Especiais Fazenda Pública" ~ "JECFP",
+        tabela == "Turma Estadual de Uniformização" ~ "TEU",
+        tabela == "Militar da União 1º" ~ "U1",
+        tabela == "Militar da União STM" ~ "STM",
+        tabela == "Militar Estadual 1º" ~ "E1",
+        tabela == "Militar Estadual TJM" ~ "TJM",
+        tabela == "Eleitoral Zonas Eleitorais" ~ "ZE",
+        tabela == "Eleitoral TRE" ~ "TRE",
+        tabela == "Eleitoral TSE" ~ "TSE",
+        justica == "Superiores" ~ tabela
+      ),
+      data_versao = lubridate::dmy(data_versao),
+      sigla = paste0(tipo_abbr, "_", justica_abbr, tabela_abbr, "_", data_versao)
+    ) |> 
+    dplyr::select(
+      sigla,
+      tipo,
+      tipo_abbr,
+      data_versao,
+      justica,
+      tabela,
+      link
+    )
 }
