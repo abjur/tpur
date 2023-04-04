@@ -92,7 +92,7 @@ tpu_parse <- function(file) {
   
   da_assunto1 <- assunto1_sem_id |> 
     dplyr::mutate(
-      id = ifelse(assunto1, 1:n_ids, NA_integer_)
+      id = ifelse(assunto1, 1:n_id, NA_integer_)
     ) |> 
     tidyr::fill(id, .direction="down") |> 
     dplyr::group_by(id) |> 
@@ -151,9 +151,9 @@ tpu_parse <- function(file) {
     
     da <- da |> 
       dplyr::bind_rows(row) |>
-      dplyr::arrange(id) |>
-      dplyr::select(-id)
+      dplyr::arrange(id) 
   }
+  da <- da |> dplyr::select(-id)
   return(da)
 }
 
