@@ -1,16 +1,16 @@
-tpu_download <- function(sig, path = "data-raw/tpu") {
+tpu_assunto_download <- function(sig, path = "data-raw/tpu/A") {
   load("data/sgt_atual.rda")
   
   u_tpu <- sgt_atual |>
     dplyr::filter(sigla == sig) |> 
     dplyr::pull(link)
   
-  file <- glue::glue("{path}/tpu_{sig}.html")
+  file <- glue::glue("{path}/{sig}.html")
   
   r_tpu <- httr::GET(u_tpu, httr::write_disk(file, overwrite = TRUE))
 }
 
-tpu_parse <- function(file) {
+tpu_assunto_parse <- function(file) {
   # pega todos os assuntos de nível 2 a 6
   html <- xml2::read_html(file) |>
     xml2::xml_find_first("//table") |> 
@@ -90,10 +90,14 @@ tpu_parse <- function(file) {
     dplyr::select(!dplyr::contains("assunto")) |> 
     ncol()
   
-  da_assunto1 <- assunto1_sem_id |> 
+  assunto1_ids <- assunto1_sem_id |> 
+    dplyr::filter(classe1) |> 
     dplyr::mutate(
-      id = ifelse(assunto1, 1:n_id, NA_integer_)
-    ) |> 
+      id = ifelse(classe1, 1:n_id, NA_integer_)
+    ) 
+  
+  da_assunto1 <- assunto1_sem_id |> 
+    dplyr::left_join(assunto1_ids) |> 
     tidyr::fill(id, .direction="down") |> 
     dplyr::group_by(id) |> 
     dplyr::mutate(
@@ -157,7 +161,7 @@ tpu_parse <- function(file) {
   return(da)
 }
 
-tpu_tidy <- function(da) {
+tpu_assunto_tidy <- function(da) {
   da |> 
     dplyr::mutate(
       dplyr::across(
