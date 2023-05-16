@@ -1,25 +1,45 @@
 # sgt_atuais
 
-sgt_atual_download <- function(tipo, path = "data-raw/sgt_atual") {
-  u_sgt <- glue::glue("https://www.cnj.jus.br/sgt/versoes.php?tipo_tabela={tipo}")
-  file <- glue::glue("{path}/sgt_{tipo}.html")
-  r_sgt <- httr::GET(u_sgt, httr::write_disk(file, overwrite = TRUE))
+sgt_download <- function(tipo, path = "data-raw/sgt", atual = TRUE) {
+ if(atual) {
+   u_sgt <- glue::glue("https://www.cnj.jus.br/sgt/versoes.php?tipo_tabela={tipo}")
+   file <- glue::glue("{path}/sgt_atual_{tipo}.html")
+   r_sgt <- httr::GET(u_sgt, httr::write_disk(file, overwrite = TRUE))
+  } else {
+    u_sgt <- glue::glue("https://www.cnj.jus.br/sgt/versoes.php?tipo_tabela={tipo}")
+    file <- glue::glue("{path}/sgt_atual_{tipo}.html")
+    r_sgt <- httr::GET(u_sgt, httr::write_disk(file, overwrite = TRUE))
+    
+    u_sgt <- glue::glue("https://www.cnj.jus.br/sgt/versoes_anteriores.php?tipo_tabela={tipo}")
+    file <- glue::glue("{path}/sgt_anterior_{tipo}.html")
+    r_sgt <- httr::GET(u_sgt, httr::write_disk(file, overwrite = TRUE))
+ }
 }
 
-sgt_atual_parse <- function(file) {
-
+sgt_parse <- function(file) {
+  
+  atual <- stringr::str_detect(file, "atual")
   html <- xml2::read_html(file)
-  table <- html |> 
-    xml2::xml_find_first("//table[@class='tabelaLista']") |> 
-    xml2::xml_find_all(".//tr[@class='itemLista']") 
   
+  if(atual) {
+    table <- html |> 
+      xml2::xml_find_first("//table[@class='tabelaLista']") |> 
+      xml2::xml_find_all(".//tr[@class='itemLista']") 
+    
+  } else {
+    table <- html |> 
+      xml2::xml_find_all("//table[@class='tabelaLista']") |> 
+      xml2::xml_find_all(".//tr[@class='itemLista']") 
+  }
+
   tipo <- file |> 
-    stringr::str_remove("data-raw/sgt_atual/sgt_") |> 
+    stringr::str_remove(stringr::regex("data-raw\\/sgt\\/sgt_[a-z]+_")) |> 
     stringr::str_remove("\\.html") 
-  
+
   da <- purrr::map(table, function(table) {
     data.frame(
       tipo = tipo,
+      atual = atual,
       data_versao = table |> 
         xml2::xml_find_all(".//td[1]") |> 
         xml2::xml_text(trim = TRUE),
@@ -39,61 +59,14 @@ sgt_atual_parse <- function(file) {
     dplyr::bind_rows() |> 
     dplyr::mutate(
       link = glue::glue("https://www.cnj.jus.br/sgt/{link}")
-    )
-  
-  return(da)
-}
-
-# sgt_anterior
-
-sgt_anterior_download <- function(tipo, path = "data-raw/sgt_anterior") {
-  
-  u_sgt <- glue::glue("https://www.cnj.jus.br/sgt/versoes_anteriores.php?tipo_tabela={tipo}")
-  file <- glue::glue("{path}/sgt_{tipo}.html")
-  r_sgt <- httr::GET(u_sgt, httr::write_disk(file, overwrite = TRUE))
-  
-}
-
-sgt_anterior_parse <- function(file) {
-  
-  html <- xml2::read_html(file)
-  table <- html |> 
-    xml2::xml_find_all("//table[@class='tabelaLista']") |> 
-    xml2::xml_find_all(".//tr[@class='itemLista']") 
-  
-  tipo <- file |> 
-    stringr::str_remove("data-raw/sgt_anterior/sgt_") |> 
-    stringr::str_remove("\\.html") 
-  
-  da <- purrr::map(table, function(table) {
-    data.frame(
-      tipo = tipo,
-      data_versao = table |> 
-        xml2::xml_find_all(".//td[1]") |> 
-        xml2::xml_text(trim = TRUE),
-      justica = table |> 
-        xml2::xml_find_all(".//td[2]") |> 
-        xml2::xml_text(trim = TRUE),
-      tabela = table |> 
-        xml2::xml_find_all(".//td[3]") |> 
-        xml2::xml_find_all(".//option") |> 
-        xml2::xml_text(),
-      link = table |> 
-        xml2::xml_find_all(".//td[3]") |> 
-        xml2::xml_find_all(".//option") |> 
-        xml2::xml_attr("value")
-      
-    )
-  }) |> dplyr::bind_rows() |> 
-    dplyr::mutate(
-      link = glue::glue("https://www.cnj.jus.br/sgt/{link}")
-    )
+    ) |> 
+    dplyr::arrange(atual)
   
   return(da)
 }
 
 sgt_tidy <- function(da) {
-  a <- da |> 
+  da |> 
     dplyr::mutate(
       tipo_abbr = tipo,
       tipo = dplyr::case_when(
@@ -148,7 +121,8 @@ sgt_tidy <- function(da) {
       sigla = glue::glue("{tipo_abbr}_{data_versao}_{justica_abbr}{tabela_abbr}")
     ) |> 
     dplyr::select(
-      sigla,
+      id = sigla,
+      atual,
       tipo,
       tipo_abbr,
       data_versao,

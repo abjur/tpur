@@ -1,33 +1,15 @@
-# atual  -----------------------------------------------------------------
-# download
+# download ----------------------------------------------------------------
+
 tipos <- c("A", "C", "M") 
 
 tipos |> 
-  purrr::map(sgt_atual_download)
+  purrr::map(sgt_download, atual = FALSE)
 
-# parse
-sgt_atual <- fs::dir_ls("data-raw/sgt_atual/") |> 
-  purrr::map_dfr(sgt_atual_parse) |> 
+# parse -------------------------------------------------------------------
+
+sgt <- fs::dir_ls("data-raw/sgt/") |> 
+  purrr::map_dfr(sgt_parse) |> 
   sgt_tidy()
 
-usethis::use_data(sgt_atual, overwrite = TRUE)
+usethis::use_data(sgt, overwrite = TRUE)
 
-# anterior -------------------------------------------------------------------
-# download
-tipos <- c("A", "C", "M")
-
-tipos |> 
-  purrr::map(sgt_anterior_download)
-
-# parse
-sgt_anterior <- fs::dir_ls("data-raw/sgt_anterior/") |> 
-  purrr::map_dfr(sgt_anterior_parse) |> 
-  sgt_tidy()
-
-usethis::use_data(sgt_anterior, overwrite = TRUE)
-
-# tidy --------------------------------------------------------------------
-sgt_unificado <- sgt_atual |> 
-  dplyr::bind_rows(sgt_anterior)
-
-usethis::use_data(sgt_unificado, overwrite = TRUE)
