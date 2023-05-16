@@ -1,6 +1,6 @@
 # atual  -----------------------------------------------------------------
 # download
-tipos <- c("A", "C", "M")
+tipos <- c("A", "C", "M") 
 
 tipos |> 
   purrr::map(sgt_atual_download)

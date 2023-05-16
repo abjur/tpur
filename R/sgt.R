@@ -93,7 +93,7 @@ sgt_anterior_parse <- function(file) {
 }
 
 sgt_tidy <- function(da) {
-  da |> 
+  a <- da |> 
     dplyr::mutate(
       tipo_abbr = tipo,
       tipo = dplyr::case_when(
@@ -110,6 +110,7 @@ sgt_tidy <- function(da) {
         justica == "Superiores" ~ "S",
       ),
       tabela = stringr::str_squish(tabela),
+      tabela = stringr::str_replace_all(tabela, "º", "°"),
       tabela_abbr = dplyr::case_when(
         tabela == "Trabalho 1° Grau" ~ "1",
         tabela == "Trabalho 2° Grau" ~ "2",
@@ -123,20 +124,28 @@ sgt_tidy <- function(da) {
         tabela == "Estadual 1° Grau" ~ "1",
         tabela == "Estadual 2° Grau" ~ "2",
         tabela == "Estadual Juizado Especial" ~ "JEC",
+        tabela == "Estadual Turmas Recursais" ~ "TR",
         tabela == "Estadual Turmas Recursais de Uniformização" ~ "TRU",
         tabela == "Juizados Especiais Fazenda Pública" ~ "JECFP",
+        tabela == "Juizados Especiais da Fazenda Pública" ~ "JECFP",
         tabela == "Turma Estadual de Uniformização" ~ "TEU",
-        tabela == "Militar da União 1º" ~ "U1",
+        tabela == "Militar da União 1°" ~ "U1",
+        tabela == "Militar União 1° Grau" ~ "U1",
         tabela == "Militar da União STM" ~ "STM",
-        tabela == "Militar Estadual 1º" ~ "E1",
+        tabela == "Militar União STM" ~ "STM",
+        tabela == "Militar Estadual 1°" ~ "E1",
+        tabela == "Militar Estadual 1° Grau" ~ "E1",
         tabela == "Militar Estadual TJM" ~ "TJM",
+        tabela == "Justiça Eleitoral - Zonas Eleitorais" ~ "ZE",
         tabela == "Eleitoral Zonas Eleitorais" ~ "ZE",
         tabela == "Eleitoral TRE" ~ "TRE",
+        tabela == "Justiça Eleitoral - TRE" ~ "TRE",
         tabela == "Eleitoral TSE" ~ "TSE",
+        tabela == "Justiça Eleitoral - TSE" ~ "TSE",
         justica == "Superiores" ~ tabela
       ),
       data_versao = lubridate::dmy(data_versao),
-      sigla = paste0(tipo_abbr, "_", justica_abbr, tabela_abbr, "_", data_versao)
+      sigla = glue::glue("{tipo_abbr}_{data_versao}_{justica_abbr}{tabela_abbr}")
     ) |> 
     dplyr::select(
       sigla,

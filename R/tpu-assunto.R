@@ -1,7 +1,7 @@
 tpu_assunto_download <- function(sig, path = "data-raw/tpu/A") {
   load("data/sgt_atual.rda")
   
-  u_tpu <- sgt_atual |>
+  u_tpu <- sgt_unificado |>
     dplyr::filter(sigla == sig) |> 
     dplyr::pull(link)
   
@@ -91,9 +91,9 @@ tpu_assunto_parse <- function(file) {
     ncol()
   
   assunto1_ids <- assunto1_sem_id |> 
-    dplyr::filter(classe1) |> 
+    dplyr::filter(assunto1) |> 
     dplyr::mutate(
-      id = ifelse(classe1, 1:n_id, NA_integer_)
+      id = ifelse(assunto1, 1:n_id, NA_integer_)
     ) 
   
   da_assunto1 <- assunto1_sem_id |> 

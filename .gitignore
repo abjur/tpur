@@ -26,3 +26,7 @@ vignettes/*.pdf
 .Rproj
 .Rproj.user
 inst/doc
+data-raw/csv
+data-raw/tpu
+data-raw/sgt_atual
+data-raw/sgt_anterior
