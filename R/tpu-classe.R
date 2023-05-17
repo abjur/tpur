@@ -1,8 +1,8 @@
 tpu_classe_download <- function(sig, path = "data-raw/tpu/C") {
-  load("data/sgt_atual.rda")
+  load("data/sgt.rda")
   
-  u_tpu <- sgt_atual |>
-    dplyr::filter(sigla == sig) |> 
+  u_tpu <- sgt |>
+    dplyr::filter(id == sig) |> 
     dplyr::pull(link)
   
   file <- glue::glue("{path}/{sig}.html")

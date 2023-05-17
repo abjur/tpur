@@ -13,3 +13,7 @@ sgt <- fs::dir_ls("data-raw/sgt/") |>
 
 usethis::use_data(sgt, overwrite = TRUE)
 
+
+# releases ----------------------------------------------------------------
+
+piggyback::pb_new_release(tag = "sgt")
