@@ -1,11 +1,17 @@
 tpu_assunto_download <- function(sig, path = "data-raw/tpu/A") {
   load("data/sgt.rda")
   
+  versao <- sig |> 
+    stringr::str_extract("[0-9]{4}-[0-9]{2}-[0-9]{2}") |> 
+    stringr::str_remove_all("-")
+  
   u_tpu <- sgt |>
     dplyr::filter(id == sig) |> 
     dplyr::pull(link)
   
-  file <- glue::glue("{path}/{sig}.html")
+  fs::dir_create(glue::glue("{path}/{versao}"))
+  
+  file <- glue::glue("{path}/{versao}/{sig}.html")
   
   r_tpu <- httr::GET(u_tpu, httr::write_disk(file, overwrite = TRUE))
 }
@@ -181,7 +187,14 @@ tpu_assunto_tidy <- function(da) {
         ~lubridate::ymd_hms(.x)
       )
     ) |> 
-    tidyr::fill(dplyr::contains("assunto"), .direction="down") |> 
+    tidyr::fill(dplyr::starts_with("assunto")) |> 
+    dplyr::mutate(
+      assunto2 = ifelse(assunto1 == dplyr::lag(assunto1), assunto2, NA),
+      assunto3 = ifelse(assunto2 == dplyr::lag(assunto2), assunto3, NA),
+      assunto4 = ifelse(assunto3 == dplyr::lag(assunto3), assunto4, NA),
+      assunto5 = ifelse(assunto4 == dplyr::lag(assunto4), assunto5, NA),
+      assunto6 = ifelse(assunto5 == dplyr::lag(assunto5), assunto6, NA)
+    ) |> 
     dplyr::mutate(
       dplyr::across(
         dplyr::contains("assunto"),

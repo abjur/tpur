@@ -1,11 +1,17 @@
 tpu_classe_download <- function(sig, path = "data-raw/tpu/C") {
   load("data/sgt.rda")
   
+  versao <- sig |> 
+    stringr::str_extract("[0-9]{4}-[0-9]{2}-[0-9]{2}") |> 
+    stringr::str_remove_all("-")
+  
   u_tpu <- sgt |>
     dplyr::filter(id == sig) |> 
     dplyr::pull(link)
   
-  file <- glue::glue("{path}/{sig}.html")
+  fs::dir_create(glue::glue("{path}/{versao}"))
+  
+  file <- glue::glue("{path}/{versao}/{sig}.html")
   
   r_tpu <- httr::GET(u_tpu, httr::write_disk(file, overwrite = TRUE))
 }
@@ -186,7 +192,14 @@ tpu_classe_tidy <- function(da) {
         ~lubridate::ymd_hms(.x)
       )
     ) |> 
-    tidyr::fill(dplyr::contains("classe"), .direction="down") |> 
+    tidyr::fill(dplyr::starts_with("classe")) |> 
+    dplyr::mutate(
+      classe2 = ifelse(classe1 == dplyr::lag(classe1), classe2, NA),
+      classe3 = ifelse(classe2 == dplyr::lag(classe2), classe3, NA),
+      classe4 = ifelse(classe3 == dplyr::lag(classe3), classe4, NA),
+      classe5 = ifelse(classe4 == dplyr::lag(classe4), classe5, NA),
+      classe6 = ifelse(classe5 == dplyr::lag(classe5), classe6, NA)
+    ) |> 
     dplyr::mutate(
       dplyr::across(
         dplyr::contains("classe"),
