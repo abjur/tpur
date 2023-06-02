@@ -38,7 +38,7 @@ cria_csv <- function(dados, nome_arquivo){
 path_a <- fs::dir_ls("data-raw/tpu/A")
 path_a_csv <- "data-raw/csv/A"
 
-for(path_versao in path_a) {
+for(path_versao in rev(path_a)) {
   
   versao <- path_versao |> 
     stringr::str_extract("[0-9]+")
@@ -72,7 +72,7 @@ for(path_versao in rev(path_c)) {
     purrr::map_dfr(tpu_classe_parse) |> 
     tpu_classe_tidy() |> 
     dplyr::distinct() |> 
-    cria_csv(glue::glue("{path_c_csv}/A_{versao}.csv"))
+    cria_csv(glue::glue("{path_c_csv}/C_{versao}.csv"))
 }
 
 fs::dir_ls(path_c_csv) |> 
