@@ -4,11 +4,11 @@
 
 datas <- unique(sgt$data_versao)
 
-# assuntos
+# assuntos_download -------------------------------------------------------
+
 for(data in datas) {
   sgt |> 
     dplyr::filter(
-      # atual,
       tipo == "Assuntos",
       data_versao == data
     ) |> 
@@ -16,11 +16,11 @@ for(data in datas) {
     purrr::map(tpu_assunto_download)
 }
 
-# classes
+# classes_download -------------------------------------------------------
+
 for(data in datas) {
   sgt |> 
     dplyr::filter(
-      # atual,
       tipo == "Classes",
       data_versao == data
     ) |> 
@@ -34,10 +34,13 @@ cria_csv <- function(dados, nome_arquivo){
   readr::write_csv(dados, path_file)
 }
 
-# assuntos
+
+# assuntos_parse ----------------------------------------------------------
+# preparação
 path_a <- fs::dir_ls("data-raw/tpu/A")
 path_a_csv <- "data-raw/csv/A"
 
+# cria csv 
 for(path_versao in rev(path_a)) {
   
   versao <- path_versao |> 
@@ -49,19 +52,42 @@ for(path_versao in rev(path_a)) {
     purrr::map_dfr(tpu_assunto_parse) |>
     tpu_assunto_tidy() |>
     dplyr::distinct() |>
+    dplyr::mutate(
+      id = glue::glue("A_{versao}")
+    ) |> 
+    dplyr::select(id, dplyr::everything()) |> 
     cria_csv(glue::glue("{path_a_csv}/A_{versao}.csv"))
 }
 
+# coloca csv no releases
 fs::dir_ls(path_a_csv) |> 
   purrr::walk(piggyback::pb_upload, tag = "assuntos", overwrite = TRUE)
 
-# classes
+# faz a tabela resumindo todos os releases
+assuntos <- tibble::tibble(
+    file = basename(fs::dir_ls(path_a_csv))
+  ) |> 
+  dplyr::mutate(
+    dt_ini = stringr::str_extract_all(file, "[0-9]+"),
+    dt_ini = lubridate::ymd(dt_ini)
+  ) |> 
+  dplyr::arrange(desc(dt_ini)) |> 
+  dplyr::mutate(
+    dt_fim = dplyr::lag(dt_ini) - lubridate::day(1),
+    dt_fim = tidyr::replace_na(dt_fim, lubridate::today()),
+    periodo_validade = lubridate::interval(start = dt_ini, end = dt_fim),
+    release = piggyback::pb_download_url(file, tag = "assuntos")
+  )
+
+readr::write_csv(assuntos, "inst/extdata/assuntos.csv")
+
+# classes_parse -----------------------------------------------------------
+# preparação
 path_c <- fs::dir_ls("data-raw/tpu/C")
 path_c_csv <- "data-raw/csv/C"
 
-
+# cria csv
 for(path_versao in rev(path_c)) {
-  # print(path_versao)
 
   versao <- path_versao |> 
     stringr::str_extract("[0-9]+")
@@ -72,12 +98,31 @@ for(path_versao in rev(path_c)) {
     purrr::map_dfr(tpu_classe_parse) |> 
     tpu_classe_tidy() |> 
     dplyr::distinct() |> 
+    dplyr::mutate(
+      id = glue::glue("C_{versao}")
+    ) |> 
+    dplyr::select(id, dplyr::everything()) |> 
     cria_csv(glue::glue("{path_c_csv}/C_{versao}.csv"))
 }
 
+# coloca csv no releases
 fs::dir_ls(path_c_csv) |> 
   purrr::walk(piggyback::pb_upload, tag = "classes", overwrite = TRUE)
 
-# criar releases (rodar só uma vez)
+# faz a tabela resumindo todos os releases
+classes <- tibble::tibble(
+  file = basename(fs::dir_ls(path_c_csv))
+) |> 
+  dplyr::mutate(
+    dt_ini = stringr::str_extract_all(file, "[0-9]+"),
+    dt_ini = lubridate::ymd(dt_ini)
+  ) |> 
+  dplyr::arrange(desc(dt_ini)) |> 
+  dplyr::mutate(
+    dt_fim = dplyr::lag(dt_ini) - lubridate::day(1),
+    dt_fim = tidyr::replace_na(dt_fim, lubridate::today()),
+    periodo_validade = lubridate::interval(start = dt_ini, end = dt_fim),
+    release = piggyback::pb_download_url(file, tag = "classes")
+  )
 
-# piggyback::pb_new_release(tag = "classes")
+readr::write_csv(classes, "inst/extdata/classes.csv")

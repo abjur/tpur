@@ -207,3 +207,48 @@ tpu_classe_tidy <- function(da) {
       )
     )   
 }
+
+tpu_classe_read <- function(busca = NULL, ini = lubridate::today(), fim = lubridate::today()) {
+  classes <- readr::read_csv("inst/extdata/classes.csv")
+  
+  # baixar as TPUs corretas
+  if(class(ini) != "date") {
+    ini <- as.Date(ini)
+  }
+  if(class(fim) != "date") {
+    fim <- as.Date(fim)
+  }
+  
+  periodo <- lubridate::interval(ini, fim)
+  
+  files <- classes |> 
+    dplyr::mutate(
+      pegar = lubridate::int_overlaps(periodo, periodo_validade)
+    ) |> 
+    dplyr::filter(pegar) |> 
+    dplyr::pull(release)
+  
+  da <- readr::read_csv(files)
+  
+  # selecionar os códigos
+  busca <- busca |> 
+    abjutils::rm_accent() |> 
+    stringr::str_to_lower()
+  
+  da |> 
+    dplyr::mutate(
+      classe = dplyr::case_when(
+        classe6 != "-" ~ classe6,
+        classe5 != "-" ~ classe5,
+        classe4 != "-" ~ classe4,
+        classe3 != "-" ~ classe3,
+        classe2 != "-" ~ classe2,
+        classe1 != "-" ~ classe1
+      ),
+      classe = abjutils::rm_accent(classe),
+      classe = stringr::str_to_lower(classe),
+      pegar = stringr::str_detect(classe, busca)
+    ) |> 
+    dplyr::filter(pegar) |> 
+    dplyr::pull(codigo)
+}

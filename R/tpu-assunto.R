@@ -202,3 +202,48 @@ tpu_assunto_tidy <- function(da) {
       )
     )   
 }
+
+tpu_assunto_read <- function(busca = NULL, ini = lubridate::today(), fim = lubridate::today()) {
+  assuntos <- readr::read_csv("inst/extdata/assuntos.csv")
+  
+  # baixar as TPUs corretas
+  if(class(ini) != "date") {
+    ini <- as.Date(ini)
+  }
+  if(class(fim) != "date") {
+    fim <- as.Date(fim)
+  }
+  
+  periodo <- lubridate::interval(ini, fim)
+  
+  files <- assuntos |> 
+    dplyr::mutate(
+      pegar = lubridate::int_overlaps(periodo, periodo_validade)
+    ) |> 
+    dplyr::filter(pegar) |> 
+    dplyr::pull(release)
+  
+  da <- readr::read_csv(files)
+  
+  # selecionar os códigos
+  busca <- busca |> 
+    abjutils::rm_accent() |> 
+    stringr::str_to_lower()
+  
+  da |> 
+    dplyr::mutate(
+      assunto = dplyr::case_when(
+        assunto6 != "-" ~ assunto6,
+        assunto5 != "-" ~ assunto5,
+        assunto4 != "-" ~ assunto4,
+        assunto3 != "-" ~ assunto3,
+        assunto2 != "-" ~ assunto2,
+        assunto1 != "-" ~ assunto1
+      ),
+      assunto = abjutils::rm_accent(assunto),
+      assunto = stringr::str_to_lower(assunto),
+      pegar = stringr::str_detect(assunto, busca)
+    ) |> 
+    dplyr::filter(pegar) |> 
+    dplyr::pull(codigo)
+}
