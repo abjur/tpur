@@ -1,0 +1,3 @@
+utils::globalVariables(c(
+  "alteracoes", "artigo", "assunto", "assunto1", "assunto1_acima", "assunto2", "assunto3", "assunto4", "assunto5", "assunto6", "assunto_tidy", "atual", "classe", "classe1", "classe1_acima", "classe2", "classe3", "classe4", "classe5", "classe6", "classe_tidy", "codigo", "codigo_pai", "colname", "data_versao", "dispositivo_legal", "dt_alteracao", "dt_fim", "dt_inativacao", "dt_ini", "dt_publicacao", "dt_reativacao", "glossario", "id", "justica", "link", "n", "pegar", "periodo_validade", "release", "sgt", "sigla", "tabela", "tipo", "tipo_abbr", "txt"
+))

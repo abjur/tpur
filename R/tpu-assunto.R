@@ -1,3 +1,11 @@
+#' Baixar html assunto TPU
+#' 
+#' Baixa um arquivo html na pasta indicada
+#' 
+#' @param sig Sigla que se deseja baixar. A lista de siglas está na base sgt. Esta função recebe apenas as siglas iniciadas com "A"
+#' @param path Diretório em que o html será salvo
+#' 
+#' @return Retorna o path dos arquivos salvos
 tpu_assunto_download <- function(sig, path = "data-raw/tpu/A") {
   load("data/sgt.rda")
   
@@ -14,8 +22,17 @@ tpu_assunto_download <- function(sig, path = "data-raw/tpu/A") {
   file <- glue::glue("{path}/{versao}/{sig}.html")
   
   r_tpu <- httr::GET(u_tpu, httr::write_disk(file, overwrite = TRUE))
+  
+  file
 }
 
+#' Parse html assunto TPU
+#' 
+#' Realiza o parse do html de um arquivo de assunto das TPUs
+#' 
+#' @param file Recebe o path de um arquivo html
+#' 
+#' @return Retorna um data frame, com 16 colunas
 tpu_assunto_parse <- function(file) {
   # pega todos os assuntos de nível 2 a 6
   html <- xml2::read_html(file) |>
@@ -167,11 +184,18 @@ tpu_assunto_parse <- function(file) {
   return(da)
 }
 
+#' Arruma uma base de assuntos
+#' 
+#' Realiza a arrumação de uma base de dados contendo os assuntos de uma TPU 
+#' 
+#' @param da Recebe um data frame 
+#' 
+#' @return Retorna um data frame arrumado, com 16 colunas
 tpu_assunto_tidy <- function(da) {
   da |> 
     dplyr::mutate(
       dplyr::across(
-        everything(),
+        dplyr::everything(),
         ~ifelse(.x == "", NA_character_, .x)
       ),
       dplyr::across(
@@ -203,14 +227,27 @@ tpu_assunto_tidy <- function(da) {
     )   
 }
 
-tpu_assunto_read <- function(busca = NULL, ini = lubridate::today(), fim = lubridate::today()) {
-  assuntos <- readr::read_csv("inst/extdata/assuntos.csv")
+#' Ler assuntos da TPU
+#' 
+#' Retorna os códigos de assuntos das TPUs por período
+#' 
+#' @param busca Palavra a ser buscada nos assuntos
+#' @param ini Data de início, por default o dia de hoje
+#' @param fim Data de fim, por default o dia de hoje
+#' 
+#' @return Retorna tibble com 5 colunas:
+#' 
+#' @examples tpu_assunto_read("medicamento", ini = "2023-01-01", fim = "2023-02-01")
+#'
+#' @export
+tpu_assunto_read <- function(busca = NULL, ini = Sys.Date(), fim = Sys.Date()) {
+  assuntos <- readr::read_csv(system.file("extdata/assuntos.csv", package = "tpur"), show_col_types = FALSE)
   
   # baixar as TPUs corretas
-  if(class(ini) != "date") {
+  if(!lubridate::is.Date(ini)) {
     ini <- as.Date(ini)
   }
-  if(class(fim) != "date") {
+  if(!lubridate::is.Date(fim)) {
     fim <- as.Date(fim)
   }
   
@@ -218,12 +255,13 @@ tpu_assunto_read <- function(busca = NULL, ini = lubridate::today(), fim = lubri
   
   files <- assuntos |> 
     dplyr::mutate(
+      periodo_validade = lubridate::interval(dt_ini, dt_fim),
       pegar = lubridate::int_overlaps(periodo, periodo_validade)
     ) |> 
     dplyr::filter(pegar) |> 
     dplyr::pull(release)
   
-  da <- readr::read_csv(files)
+  da <- readr::read_csv(files, show_col_types = FALSE)
   
   # selecionar os códigos
   busca <- busca |> 
@@ -240,10 +278,22 @@ tpu_assunto_read <- function(busca = NULL, ini = lubridate::today(), fim = lubri
         assunto2 != "-" ~ assunto2,
         assunto1 != "-" ~ assunto1
       ),
-      assunto = abjutils::rm_accent(assunto),
-      assunto = stringr::str_to_lower(assunto),
-      pegar = stringr::str_detect(assunto, busca)
+      assunto_tidy = abjutils::rm_accent(assunto),
+      assunto_tidy = stringr::str_to_lower(assunto_tidy),
+      pegar = stringr::str_detect(assunto_tidy, busca)
     ) |> 
-    dplyr::filter(pegar) |> 
-    dplyr::pull(codigo)
+    dplyr::filter(pegar) |>
+    dplyr::mutate(file = glue::glue("{id}.csv")) |> 
+    dplyr::left_join(assuntos) |> 
+    dplyr::mutate(
+      dt_ini = format(dt_ini, "%d/%m/%Y"),
+      dt_fim = format(dt_fim, "%d/%m/%Y")
+    ) |> 
+    dplyr::transmute(
+      id,
+      tpu_periodo_validade = glue::glue("de {dt_ini} a {dt_fim}"),
+      codigo, 
+      assunto
+    ) |> 
+    dplyr::distinct(codigo, .keep_all = TRUE)
 }

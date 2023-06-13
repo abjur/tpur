@@ -1,37 +1,33 @@
 Package: tpur
-Type: Package
 Title: Brazilian Unified Procedural Tables in R 
-Version: 1.0
-Date: 2016-12-13
-Author: Brazilian Jurimetrics Association
-Maintainer: <contato@abjur.org.br>
+Version: 0.0.1
 Description: Download and access tables containing general purpose classifications for brazilian legal processes, providing some pre-processing as well.
-LazyData: TRUE
+Authors@R:
+    c(person("Ricardo", "Feliz Okamoto",
+             email = "ric.feliz@gmail.com",
+             role = c("cre", "aut")),
+      person(given = "Associação Brasileira de Jurimetria",
+             role = c("cph", "fnd")))
+Depends:
+    R (>= 3.5)
 License: MIT + file LICENSE
 Encoding: UTF-8
-Depends:
-    R (>= 3.1.2)
-Imports:
-    ifelser,
-    dplyr,
-    stringr,
-    openxlsx,
-    rvest,
-    xml2,
-    tibble,
-    tidyr,
-    bnlearn,
-    magrittr,
-    httr,
-    janitor,
-    lazyeval,
-    XML,
-    abjutils,
-    purrr
-Remotes:
-    dfalbel/ifelser,
-    abjur/abjutils
-RoxygenNote: 6.0.1
-Suggests: knitr,
+LazyData: true
+RoxygenNote: 7.2.3
+Suggests:
+    knitr,
     rmarkdown
 VignetteBuilder: knitr
+Imports: 
+    dplyr,
+    readr,
+    abjutils,
+    fs, 
+    glue, 
+    httr, 
+    lubridate, 
+    purrr, 
+    stringr, 
+    tibble,    
+    tidyr,
+    xml2

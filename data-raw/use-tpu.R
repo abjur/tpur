@@ -63,24 +63,6 @@ for(path_versao in rev(path_a)) {
 fs::dir_ls(path_a_csv) |> 
   purrr::walk(piggyback::pb_upload, tag = "assuntos", overwrite = TRUE)
 
-# faz a tabela resumindo todos os releases
-assuntos <- tibble::tibble(
-    file = basename(fs::dir_ls(path_a_csv))
-  ) |> 
-  dplyr::mutate(
-    dt_ini = stringr::str_extract_all(file, "[0-9]+"),
-    dt_ini = lubridate::ymd(dt_ini)
-  ) |> 
-  dplyr::arrange(desc(dt_ini)) |> 
-  dplyr::mutate(
-    dt_fim = dplyr::lag(dt_ini) - lubridate::day(1),
-    dt_fim = tidyr::replace_na(dt_fim, lubridate::today()),
-    periodo_validade = lubridate::interval(start = dt_ini, end = dt_fim),
-    release = piggyback::pb_download_url(file, tag = "assuntos")
-  )
-
-readr::write_csv(assuntos, "inst/extdata/assuntos.csv")
-
 # classes_parse -----------------------------------------------------------
 # preparação
 path_c <- fs::dir_ls("data-raw/tpu/C")
@@ -109,9 +91,15 @@ for(path_versao in rev(path_c)) {
 fs::dir_ls(path_c_csv) |> 
   purrr::walk(piggyback::pb_upload, tag = "classes", overwrite = TRUE)
 
+# readme ------------------------------------------------------------------
+
+# assuntos_readme ---------------------------------------------------------
+path_a_csv <- "data-raw/csv/A"
+
 # faz a tabela resumindo todos os releases
-classes <- tibble::tibble(
-  file = basename(fs::dir_ls(path_c_csv))
+assuntos <- tibble::tibble(
+  file = basename(fs::dir_ls(path_a_csv)),
+  release = piggyback::pb_download_url(file = file, tag = "assuntos")
 ) |> 
   dplyr::mutate(
     dt_ini = stringr::str_extract_all(file, "[0-9]+"),
@@ -120,9 +108,30 @@ classes <- tibble::tibble(
   dplyr::arrange(desc(dt_ini)) |> 
   dplyr::mutate(
     dt_fim = dplyr::lag(dt_ini) - lubridate::day(1),
-    dt_fim = tidyr::replace_na(dt_fim, lubridate::today()),
-    periodo_validade = lubridate::interval(start = dt_ini, end = dt_fim),
-    release = piggyback::pb_download_url(file, tag = "classes")
-  )
+    dt_fim = tidyr::replace_na(dt_fim, lubridate::today())
+  ) |> 
+  dplyr::select(file, dt_ini, dt_fim, release)
 
-readr::write_csv(classes, "inst/extdata/classes.csv")
+readr::write_csv(assuntos, "inst/extdata/assuntos.csv", show_col_types = FALSE)
+usethis::use_data(assuntos)
+# classes_readme ----------------------------------------------------------
+path_c_csv <- "data-raw/csv/C"
+
+# faz a tabela resumindo todos os releases
+classes <- tibble::tibble(
+  file = basename(fs::dir_ls(path_c_csv)),
+  release = piggyback::pb_download_url(file, tag = "classes")
+) |> 
+  dplyr::mutate(
+    dt_ini = stringr::str_extract_all(file, "[0-9]+"),
+    dt_ini = lubridate::ymd(dt_ini)
+  ) |> 
+  dplyr::arrange(desc(dt_ini)) |> 
+  dplyr::mutate(
+    dt_fim = dplyr::lag(dt_ini) - lubridate::day(1),
+    dt_fim = tidyr::replace_na(dt_fim, lubridate::today())
+  ) |> 
+  dplyr::select(file, dt_ini, dt_fim, release)
+
+readr::write_csv(classes, "inst/extdata/classes.csv", show_col_types = FALSE)
+usethis::use_data(classes)

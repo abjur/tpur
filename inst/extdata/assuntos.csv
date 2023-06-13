@@ -1,6 +1,6 @@
-file,dt_ini,dt_fim,periodo_validade,release
-A_20230331.csv,2023-03-31,2023-06-02,2023-03-31 UTC--2023-06-02 UTC,https://github.com/abjur/tpur/releases/download/assuntos/A_20220920.csv
-A_20230202.csv,2023-02-02,2023-03-30,2023-02-02 UTC--2023-03-30 UTC,https://github.com/abjur/tpur/releases/download/assuntos/A_20221129.csv
-A_20221216.csv,2022-12-16,2023-02-01,2022-12-16 UTC--2023-02-01 UTC,https://github.com/abjur/tpur/releases/download/assuntos/A_20221216.csv
-A_20221129.csv,2022-11-29,2022-12-15,2022-11-29 UTC--2022-12-15 UTC,https://github.com/abjur/tpur/releases/download/assuntos/A_20230202.csv
-A_20220920.csv,2022-09-20,2022-11-28,2022-09-20 UTC--2022-11-28 UTC,https://github.com/abjur/tpur/releases/download/assuntos/A_20230331.csv
+file,dt_ini,dt_fim,release
+A_20230331.csv,2023-03-31,2023-06-13,https://github.com/abjur/tpur/releases/download/assuntos/A_20230331.csv
+A_20230202.csv,2023-02-02,2023-03-30,https://github.com/abjur/tpur/releases/download/assuntos/A_20230202.csv
+A_20221216.csv,2022-12-16,2023-02-01,https://github.com/abjur/tpur/releases/download/assuntos/A_20221216.csv
+A_20221129.csv,2022-11-29,2022-12-15,https://github.com/abjur/tpur/releases/download/assuntos/A_20221129.csv
+A_20220920.csv,2022-09-20,2022-11-28,https://github.com/abjur/tpur/releases/download/assuntos/A_20220920.csv
