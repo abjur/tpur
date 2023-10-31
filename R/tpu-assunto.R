@@ -37,10 +37,9 @@ tpu_assunto_parse <- function(file) {
   # pega todos os assuntos de nível 2 a 6
   html <- xml2::read_html(file) |>
     xml2::xml_find_first("//table") |> 
-    xml2::xml_find_all(".//tr[contains(@style, 'background-color')]") 
+    xml2::xml_find_all("./tr[contains(@style, 'background-color')]") 
   
-  da_sem_assunto1 <- purrr::map(html, function(html) {
-    tibble::tibble(
+  da_sem_assunto1 <- tibble::tibble(
       assunto1 = NA_character_,
       assunto2 = html |> 
         xml2::xml_find_all("./td[1]") |>
@@ -87,11 +86,10 @@ tpu_assunto_parse <- function(file) {
       dt_reativacao = html |> 
         xml2::xml_find_all("./td[15]") |>
         xml2::xml_text(trim=TRUE)
-    ) 
-  }) |> 
+    ) |> 
     dplyr::bind_rows() |> 
     dplyr::mutate(id = dplyr::row_number()*2)
-  
+
   # pega todos assuntos de nível 1
   assunto1_sem_id <- tibble::tibble(
     txt = xml2::read_html(file) |>
@@ -180,7 +178,7 @@ tpu_assunto_parse <- function(file) {
       dplyr::bind_rows(row) |>
       dplyr::arrange(id) 
   }
-  da <- da |> dplyr::select(-id)
+  da <- dplyr::select(da, -id)
   return(da)
 }
 
@@ -192,16 +190,41 @@ tpu_assunto_parse <- function(file) {
 #' 
 #' @return Retorna um data frame arrumado, com 16 colunas
 tpu_assunto_tidy <- function(da) {
+  
+  da <- dplyr::mutate(da, id = dplyr::row_number()*2)
+  
+  if(any(!stringr::str_detect(da$codigo, "[0-9]"))) {
+    id_colunas_ruins <- da |> 
+      dplyr::filter(!stringr::str_detect(codigo, "[0-9]")) |> 
+      dplyr::arrange(id) |> 
+      dplyr::pull(id)
+    
+    colunas_ruins <- da |> 
+      dplyr::filter(!stringr::str_detect(codigo, "[0-9]")) |> 
+      dplyr::arrange(id) |> 
+      dplyr::select(-id)
+    
+    colunas_ruins$id <- ""
+    names(colunas_ruins)[1:ncol(colunas_ruins)] <- c("id", names(colunas_ruins)[1:ncol(colunas_ruins) - 1])
+    colunas_ruins$id <- id_colunas_ruins
+    colunas_ruins$assunto1 <- NA_character_
+    
+    da <- da |> 
+      dplyr::filter(stringr::str_detect(codigo, "[0-9]")) |> 
+      dplyr::bind_rows(colunas_ruins) |> 
+      dplyr::arrange(id) 
+  }
+  
   da |> 
     dplyr::mutate(
       dplyr::across(
         dplyr::everything(),
         ~ifelse(.x == "", NA_character_, .x)
-      ),
+      ), 
       dplyr::across(
         dplyr::contains("codigo"),
         ~as.integer(.x)
-      ),
+      ), 
       dplyr::across(
         dplyr::starts_with("dt_"),
         ~ifelse(.x == "0000-00-00 00:00:00", NA_character_, .x)
@@ -209,7 +232,7 @@ tpu_assunto_tidy <- function(da) {
       dplyr::across(
         dplyr::starts_with("dt_"),
         ~lubridate::ymd_hms(.x)
-      )
+      ) 
     ) |> 
     tidyr::fill(dplyr::starts_with("assunto")) |> 
     dplyr::mutate(
@@ -222,9 +245,10 @@ tpu_assunto_tidy <- function(da) {
     dplyr::mutate(
       dplyr::across(
         dplyr::contains("assunto"),
-        ~tidyr::replace_na(.x, "-")
+        ~dplyr::if_else(is.na(.x), "-", .x)
       )
-    )   
+    ) |> 
+    dplyr::select(-id)
 }
 
 #' Ler assuntos da TPU

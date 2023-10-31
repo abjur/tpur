@@ -2,7 +2,8 @@
 
 # download -----------------------------------------------------------------
 
-datas <- unique(sgt$data_versao)
+datas[56] <- unique(sgt$data_versao)
+
 
 # assuntos_download -------------------------------------------------------
 
@@ -29,52 +30,51 @@ for(data in datas) {
 }
 
 # parse -------------------------------------------------------------------
-cria_csv <- function(dados, nome_arquivo){
-  path_file <- paste0(path_csv, "/", fs::path_ext_set(basename(nome_arquivo), ".csv"))
-  readr::write_csv(dados, path_file)
+cria_csv <- function(da, path_csv){
+  fs::dir_create(path_csv)
+  id <- da |> 
+    dplyr::distinct(id) |> 
+    dplyr::pull()
+  path_file <- paste0(path_csv, "/", id, ".csv")
+  readr::write_csv(da, path_file)
 }
-
 
 # assuntos_parse ----------------------------------------------------------
 # preparação
-path_a <- fs::dir_ls("data-raw/tpu/A")
-path_a_csv <- "data-raw/csv/A"
+list_a <- fs::dir_ls("data-raw/tpu/A")
+path_csv_a <- "data-raw/csv/A"
 
 # cria csv 
-for(path_versao in rev(path_a)) {
+for(path_versao in rev(list_a)) {
   
   versao <- path_versao |> 
     stringr::str_extract("[0-9]+")
   
-  path_csv <- path_a_csv
-  
   fs::dir_ls(path_versao) |>
     purrr::map_dfr(tpu_assunto_parse) |>
-    tpu_assunto_tidy() |>
+    tpu_assunto_tidy() |> 
     dplyr::distinct() |>
     dplyr::mutate(
       id = glue::glue("A_{versao}")
     ) |> 
     dplyr::select(id, dplyr::everything()) |> 
-    cria_csv(glue::glue("{path_a_csv}/A_{versao}.csv"))
+    cria_csv(path_csv = path_csv_a) 
 }
 
 # coloca csv no releases
-fs::dir_ls(path_a_csv) |> 
+fs::dir_ls(path_csv_a) |> 
   purrr::walk(piggyback::pb_upload, tag = "assuntos", overwrite = TRUE)
 
 # classes_parse -----------------------------------------------------------
 # preparação
-path_c <- fs::dir_ls("data-raw/tpu/C")
-path_c_csv <- "data-raw/csv/C"
+list_c <- fs::dir_ls("data-raw/tpu/C")
+path_csv_c <- "data-raw/csv/C"
 
 # cria csv
-for(path_versao in rev(path_c)) {
+for(path_versao in rev(list_c)) {
 
   versao <- path_versao |> 
     stringr::str_extract("[0-9]+")
-  
-  path_csv <- path_c_csv
   
   fs::dir_ls(path_versao) |> 
     purrr::map_dfr(tpu_classe_parse) |> 
@@ -84,7 +84,7 @@ for(path_versao in rev(path_c)) {
       id = glue::glue("C_{versao}")
     ) |> 
     dplyr::select(id, dplyr::everything()) |> 
-    cria_csv(glue::glue("{path_c_csv}/C_{versao}.csv"))
+    cria_csv(path_csv = path_csv_c)
 }
 
 # coloca csv no releases

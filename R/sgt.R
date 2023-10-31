@@ -1,10 +1,10 @@
 # sgt_atuais
 
 sgt_download <- function(tipo, path = "data-raw/sgt", atual = TRUE) {
- if(atual) {
-   u_sgt <- glue::glue("https://www.cnj.jus.br/sgt/versoes.php?tipo_tabela={tipo}")
-   file <- glue::glue("{path}/sgt_atual_{tipo}.html")
-   r_sgt <- httr::GET(u_sgt, httr::write_disk(file, overwrite = TRUE))
+  if(atual) {
+    u_sgt <- glue::glue("https://www.cnj.jus.br/sgt/versoes.php?tipo_tabela={tipo}")
+    file <- glue::glue("{path}/sgt_atual_{tipo}.html")
+    r_sgt <- httr::GET(u_sgt, httr::write_disk(file, overwrite = TRUE))
   } else {
     u_sgt <- glue::glue("https://www.cnj.jus.br/sgt/versoes.php?tipo_tabela={tipo}")
     file <- glue::glue("{path}/sgt_atual_{tipo}.html")
@@ -13,7 +13,7 @@ sgt_download <- function(tipo, path = "data-raw/sgt", atual = TRUE) {
     u_sgt <- glue::glue("https://www.cnj.jus.br/sgt/versoes_anteriores.php?tipo_tabela={tipo}")
     file <- glue::glue("{path}/sgt_anterior_{tipo}.html")
     r_sgt <- httr::GET(u_sgt, httr::write_disk(file, overwrite = TRUE))
- }
+  }
 }
 
 sgt_parse <- function(file) {
