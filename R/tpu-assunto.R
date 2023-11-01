@@ -39,57 +39,103 @@ tpu_assunto_parse <- function(file) {
     xml2::xml_find_first("//table") |> 
     xml2::xml_find_all("./tr[contains(@style, 'background-color')]") 
   
-  da_sem_assunto1 <- tibble::tibble(
+  sem_dts <- html |> 
+    xml2::xml_find_all("./td[14]") |>
+    xml2::xml_text(trim=TRUE) |> 
+    length() == 0
+  
+  if(sem_dts) {
+    da_sem_assunto1 <- tibble::tibble(
       assunto1 = NA_character_,
       assunto2 = html |> 
-        xml2::xml_find_all("./td[1]") |>
+        xml2::xml_find_first("./td[1]") |>
         xml2::xml_text(trim=TRUE),
       assunto3 = html |> 
-        xml2::xml_find_all("./td[2]") |>
+        xml2::xml_find_first("./td[2]") |>
         xml2::xml_text(trim=TRUE),
       assunto4 = html |> 
-        xml2::xml_find_all("./td[3]") |>
+        xml2::xml_find_first("./td[3]") |>
         xml2::xml_text(trim=TRUE),
       assunto5 = html |> 
-        xml2::xml_find_all("./td[4]") |>
+        xml2::xml_find_first("./td[4]") |>
         xml2::xml_text(trim=TRUE),
       assunto6 = html |> 
-        xml2::xml_find_all("./td[5]") |>
+        xml2::xml_find_first("./td[5]") |>
         xml2::xml_text(trim=TRUE),
       codigo = html |> 
-        xml2::xml_find_all("./td[6]") |>
+        xml2::xml_find_first("./td[6]") |>
         xml2::xml_text(trim=TRUE),
       codigo_pai = html |> 
-        xml2::xml_find_all("./td[7]") |>
+        xml2::xml_find_first("./td[7]") |>
         xml2::xml_text(trim=TRUE),
       dispositivo_legal = html |> 
-        xml2::xml_find_all("./td[8]") |>
+        xml2::xml_find_first("./td[8]") |>
         xml2::xml_text(trim=TRUE),
       artigo = html |> 
-        xml2::xml_find_all("./td[9]") |>
+        xml2::xml_find_first("./td[9]") |>
         xml2::xml_text(trim=TRUE),
       alteracoes = html |> 
-        xml2::xml_find_all("./td[10]") |>
+        xml2::xml_find_first("./td[10]") |>
         xml2::xml_text(trim=TRUE),
       glossario = html |> 
-        xml2::xml_find_all("./td[11]") |>
-        xml2::xml_text(trim=TRUE),
-      dt_publicacao = html |> 
-        xml2::xml_find_all("./td[12]") |>
-        xml2::xml_text(trim=TRUE),
-      dt_alteracao = html |> 
-        xml2::xml_find_all("./td[13]") |>
-        xml2::xml_text(trim=TRUE),
-      dt_inativacao = html |> 
-        xml2::xml_find_all("./td[14]") |>
-        xml2::xml_text(trim=TRUE),
-      dt_reativacao = html |> 
-        xml2::xml_find_all("./td[15]") |>
+        xml2::xml_find_first("./td[11]") |>
         xml2::xml_text(trim=TRUE)
     ) |> 
-    dplyr::bind_rows() |> 
-    dplyr::mutate(id = dplyr::row_number()*2)
-
+      dplyr::bind_rows() |> 
+      dplyr::mutate(id = dplyr::row_number()*2)
+  } else {
+    da_sem_assunto1 <- tibble::tibble(
+      assunto1 = NA_character_,
+      assunto2 = html |> 
+        xml2::xml_find_first("./td[1]") |>
+        xml2::xml_text(trim=TRUE),
+      assunto3 = html |> 
+        xml2::xml_find_first("./td[2]") |>
+        xml2::xml_text(trim=TRUE),
+      assunto4 = html |> 
+        xml2::xml_find_first("./td[3]") |>
+        xml2::xml_text(trim=TRUE),
+      assunto5 = html |> 
+        xml2::xml_find_first("./td[4]") |>
+        xml2::xml_text(trim=TRUE),
+      assunto6 = html |> 
+        xml2::xml_find_first("./td[5]") |>
+        xml2::xml_text(trim=TRUE),
+      codigo = html |> 
+        xml2::xml_find_first("./td[6]") |>
+        xml2::xml_text(trim=TRUE),
+      codigo_pai = html |> 
+        xml2::xml_find_first("./td[7]") |>
+        xml2::xml_text(trim=TRUE),
+      dispositivo_legal = html |> 
+        xml2::xml_find_first("./td[8]") |>
+        xml2::xml_text(trim=TRUE),
+      artigo = html |> 
+        xml2::xml_find_first("./td[9]") |>
+        xml2::xml_text(trim=TRUE),
+      alteracoes = html |> 
+        xml2::xml_find_first("./td[10]") |>
+        xml2::xml_text(trim=TRUE),
+      glossario = html |> 
+        xml2::xml_find_first("./td[11]") |>
+        xml2::xml_text(trim=TRUE),
+      dt_publicacao = html |>
+        xml2::xml_find_first("./td[12]") |>
+        xml2::xml_text(trim=TRUE),
+      dt_alteracao = html |>
+        xml2::xml_find_first("./td[13]") |>
+        xml2::xml_text(trim=TRUE),
+      dt_inativacao = html |>
+        xml2::xml_find_first("./td[14]") |>
+        xml2::xml_text(trim=TRUE),
+      dt_reativacao = html |>
+        xml2::xml_find_first("./td[15]") |>
+        xml2::xml_text(trim=TRUE)
+    ) |> 
+      dplyr::bind_rows() |> 
+      dplyr::mutate(id = dplyr::row_number()*2)
+  }
+  
   # pega todos assuntos de nível 1
   assunto1_sem_id <- tibble::tibble(
     txt = xml2::read_html(file) |>
@@ -117,47 +163,91 @@ tpu_assunto_parse <- function(file) {
       id = ifelse(assunto1, 1:n_id, NA_integer_)
     ) 
   
-  da_assunto1 <- assunto1_sem_id |> 
-    dplyr::left_join(assunto1_ids) |> 
-    tidyr::fill(id, .direction="down") |> 
-    dplyr::group_by(id) |> 
-    dplyr::mutate(
-      colname = 1:n_col,
-      colname = dplyr::case_when(
-        colname == 1 ~ "assunto1",
-        colname == 2 ~ "codigo",
-        colname == 3 ~ "codigo_pai",
-        colname == 4 ~ "dispositivo_legal",
-        colname == 5 ~ "artigo",
-        colname == 6 ~ "alteracoes",
-        colname == 7 ~ "glossario",
-        colname == 8 ~ "dt_publicacao",
-        colname == 9 ~ "dt_alteracao",
-        colname == 10 ~ "dt_inativacao",
-        colname == 11 ~ "dt_reativacao"
+  if(sem_dts) {
+    da_assunto1 <- assunto1_sem_id |> 
+      dplyr::left_join(assunto1_ids) |> 
+      tidyr::fill(id, .direction="down") |> 
+      dplyr::group_by(id) |> 
+      dplyr::mutate(
+        colname = 1:n_col,
+        colname = dplyr::case_when(
+          colname == 1 ~ "assunto1",
+          colname == 2 ~ "codigo",
+          colname == 3 ~ "codigo_pai",
+          colname == 4 ~ "dispositivo_legal",
+          colname == 5 ~ "artigo",
+          colname == 6 ~ "alteracoes",
+          colname == 7 ~ "glossario",
+          colname == 8 ~ "dt_publicacao",
+          colname == 9 ~ "dt_alteracao",
+          colname == 10 ~ "dt_inativacao",
+          colname == 11 ~ "dt_reativacao"
+        )
+      ) |> 
+      dplyr::ungroup() |> 
+      dplyr::select(txt, id, colname) |> 
+      tidyr::pivot_wider(values_from = txt, names_from = colname) |> 
+      dplyr::transmute(
+        assunto1,
+        assunto2 = "",
+        assunto3 = "",
+        assunto4 = "",
+        assunto5 = "",
+        assunto6 = "",
+        codigo,
+        codigo_pai,
+        dispositivo_legal,
+        artigo,
+        alteracoes,
+        glossario,
+        dt_publicacao = NA_character_,
+        dt_alteracao = NA_character_,
+        dt_inativacao = NA_character_,
+        dt_reativacao = NA_character_
       )
-    ) |> 
-    dplyr::ungroup() |> 
-    dplyr::select(txt, id, colname) |> 
-    tidyr::pivot_wider(values_from = txt, names_from = colname) |> 
-    dplyr::transmute(
-      assunto1,
-      assunto2 = "",
-      assunto3 = "",
-      assunto4 = "",
-      assunto5 = "",
-      assunto6 = "",
-      codigo,
-      codigo_pai,
-      dispositivo_legal,
-      artigo,
-      alteracoes,
-      glossario,
-      dt_publicacao,
-      dt_alteracao,
-      dt_inativacao,
-      dt_reativacao
-    )
+  } else {
+    da_assunto1 <- assunto1_sem_id |> 
+      dplyr::left_join(assunto1_ids) |> 
+      tidyr::fill(id, .direction="down") |> 
+      dplyr::group_by(id) |> 
+      dplyr::mutate(
+        colname = 1:n_col,
+        colname = dplyr::case_when(
+          colname == 1 ~ "assunto1",
+          colname == 2 ~ "codigo",
+          colname == 3 ~ "codigo_pai",
+          colname == 4 ~ "dispositivo_legal",
+          colname == 5 ~ "artigo",
+          colname == 6 ~ "alteracoes",
+          colname == 7 ~ "glossario",
+          colname == 8 ~ "dt_publicacao",
+          colname == 9 ~ "dt_alteracao",
+          colname == 10 ~ "dt_inativacao",
+          colname == 11 ~ "dt_reativacao"
+        )
+      ) |> 
+      dplyr::ungroup() |> 
+      dplyr::select(txt, id, colname) |> 
+      tidyr::pivot_wider(values_from = txt, names_from = colname) |> 
+      dplyr::transmute(
+        assunto1,
+        assunto2 = "",
+        assunto3 = "",
+        assunto4 = "",
+        assunto5 = "",
+        assunto6 = "",
+        codigo,
+        codigo_pai,
+        dispositivo_legal,
+        artigo,
+        alteracoes,
+        glossario,
+        dt_publicacao,
+        dt_alteracao,
+        dt_inativacao,
+        dt_reativacao
+      )
+  }
   
   # insere os assuntos de nivel 1 junto dos demais assuntos
   da <- da_sem_assunto1
@@ -178,6 +268,7 @@ tpu_assunto_parse <- function(file) {
       dplyr::bind_rows(row) |>
       dplyr::arrange(id) 
   }
+
   da <- dplyr::select(da, -id)
   return(da)
 }
