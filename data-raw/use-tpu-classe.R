@@ -2,21 +2,32 @@
 
 # download -----------------------------------------------------------------
 
-datas <- unique(sgt$data_versao)
+dt_ja_tem <- tpur::classes |> 
+  dplyr::distinct(dt_ini) |> 
+  dplyr::pull()
 
-for(data in datas[30:57]) {
+datas <- sgt |> 
+  tibble::as_tibble() |> 
+  dplyr::filter(!data_versao %in% dt_ja_tem) |> 
+  dplyr::distinct(data_versao) |> 
+  head(1) |> 
+  dplyr::pull()
+
+for(data in datas) {
   sgt |> 
     dplyr::filter(
       tipo == "Classes",
       data_versao == data
     ) |> 
     dplyr::pull(id) |> 
-    purrr::map(tpu_classe_download)
+    purrr::map(tpur:::tpu_classe_download)
   
-  Sys.sleep(300)
+  Sys.sleep(1)
 }
 
-# verificação
+
+# verificacao -------------------------------------------------------------
+
 list <- fs::dir_ls("data-raw/tpu/C")
 
 versao <- rev(list)[33]
@@ -64,14 +75,14 @@ for(path_versao in rev(list)) {
     stringr::str_extract("[0-9]+")
   
   fs::dir_ls(path_versao) |> 
-    purrr::map_dfr(tpu_classe_parse) |> 
-    tpu_classe_tidy() |> 
+    purrr::map_dfr(tpur:::tpu_classe_parse) |> 
+    tpur:::tpu_classe_tidy() |> 
     dplyr::distinct() |> 
     dplyr::mutate(
       id = glue::glue("C_{versao}")
     ) |> 
     dplyr::select(id, dplyr::everything()) |> 
-    cria_csv(path_csv = path_csv)
+    tpur:::cria_csv(path_csv = path_csv)
 }
 
 # coloca csv no releases

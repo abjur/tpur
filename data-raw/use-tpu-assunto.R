@@ -2,7 +2,15 @@
 
 # download -----------------------------------------------------------------
 
-datas <- unique(sgt$data_versao)
+dt_ja_tem <- tpur::classes |> 
+  dplyr::distinct(dt_ini) |> 
+  dplyr::pull()
+
+datas <- sgt |> 
+  tibble::as_tibble() |> 
+  dplyr::filter(!data_versao %in% dt_ja_tem) |> 
+  dplyr::distinct(data_versao) |> 
+  dplyr::pull()
 
 for(data in datas) {
   sgt |> 
@@ -11,7 +19,7 @@ for(data in datas) {
       data_versao == data
     ) |> 
     dplyr::pull(id) |> 
-    purrr::map(tpu_assunto_download)
+    purrr::map(tpur:::tpu_assunto_download)
 }
 
 # verificação

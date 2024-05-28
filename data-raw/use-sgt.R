@@ -7,13 +7,13 @@ path <- "data-raw/sgt"
 fs::dir_create(path)
 
 tipos |> 
-  purrr::map(sgt_download, atual = FALSE)
+  purrr::map(tpur:::sgt_download, atual = FALSE)
 
 # parse -------------------------------------------------------------------
 
 sgt <- fs::dir_ls(path) |> 
-  purrr::map_dfr(sgt_parse) |> 
-  sgt_tidy()
+  purrr::map_dfr(tpur:::sgt_parse) |> 
+  tpur:::sgt_tidy()
 
 fs::dir_ls(path) |> 
   purrr::map(fs::file_delete)
