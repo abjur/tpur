@@ -421,3 +421,76 @@ tpu_classe_read <- function(busca = NULL,  ini = Sys.Date(), fim = Sys.Date()) {
     ) |> 
     dplyr::distinct(codigo, .keep_all = TRUE)
 }
+
+#' Ler classes da TPU (busca em qualquer nível)
+#' 
+#' Retorna os códigos de classes das TPUs por período, filtrando a palavra em qualquer nível (classe1 a classe6)
+#' 
+#' @param busca Palavra a ser buscada nas classes (ignora acentos e maiúsculas)
+#' @param ini Data de início do período
+#' @param fim Data de fim do período
+#' 
+#' @return Tibble com colunas: id, período de validade, código e classe mais específica
+#' @export
+tpu_classe_read_any <- function(busca = NULL, ini = Sys.Date(), fim = Sys.Date()) {
+  classes <- readr::read_csv(system.file("extdata/classes.csv", package = "tpur"), show_col_types = FALSE)
+  
+  # tratar datas
+  if (!lubridate::is.Date(ini)) ini <- as.Date(ini)
+  if (!lubridate::is.Date(fim)) fim <- as.Date(fim)
+  
+  # identificar arquivos válidos no período
+  periodo <- lubridate::interval(ini, fim)
+  
+  files <- classes |>
+    dplyr::mutate(
+      periodo_validade = lubridate::interval(dt_ini, dt_fim),
+      pegar = lubridate::int_overlaps(periodo, periodo_validade)
+    ) |>
+    dplyr::filter(pegar) |>
+    dplyr::pull(release)
+  
+  da <- readr::read_csv(files, show_col_types = FALSE)
+  
+  # definir a classe mais específica encontrada (como na original)
+  da <- da |> dplyr::mutate(
+    especlasse = dplyr::case_when(
+      classe6 != "-" ~ classe6,
+      classe5 != "-" ~ classe5,
+      classe4 != "-" ~ classe4,
+      classe3 != "-" ~ classe3,
+      classe2 != "-" ~ classe2,
+      classe1 != "-" ~ classe1
+    )
+  )
+  
+  # normalizar palavra de busca
+  busca <- abjutils::rm_accent(busca) |> stringr::str_to_lower()
+  
+  # aplicar busca em todas as colunas de classe
+  da <- da |> dplyr::mutate(across(starts_with("classe"), ~stringr::str_to_lower(abjutils::rm_accent(.x))))
+  
+  da <- da |> dplyr::mutate(pegar = classe1 %>% stringr::str_detect(busca) |
+                              classe2 %>% stringr::str_detect(busca) |
+                              classe3 %>% stringr::str_detect(busca) |
+                              classe4 %>% stringr::str_detect(busca) |
+                              classe5 %>% stringr::str_detect(busca) |
+                              classe6 %>% stringr::str_detect(busca)) |>
+    dplyr::filter(pegar)
+
+  
+  da |> 
+    dplyr::mutate(file = glue::glue("{id}.csv")) |> 
+    dplyr::left_join(classes, by = "file") |> 
+    dplyr::mutate(
+      dt_ini = format(dt_ini, "%d/%m/%Y"),
+      dt_fim = format(dt_fim, "%d/%m/%Y")
+    ) |> 
+    dplyr::transmute(
+      id,
+      tpu_periodo_validade = glue::glue("de {dt_ini} a {dt_fim}"),
+      codigo,
+      especlasse
+    ) |> 
+    dplyr::distinct(codigo, .keep_all = TRUE)
+}
