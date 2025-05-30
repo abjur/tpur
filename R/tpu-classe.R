@@ -600,8 +600,6 @@ tpu_classe_1_busca <- function(busca = NULL,  ini = Sys.Date(), fim = Sys.Date()
   
   da <- readr::read_csv(files, show_col_types = FALSE)
   
-  busca_codigo = as.numeric(busca_codigo)
-  
   da |> 
     dplyr::mutate(
       classe = dplyr::case_when(
