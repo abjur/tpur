@@ -631,3 +631,78 @@ tpu_classe_1_busca <- function(busca = NULL,  ini = Sys.Date(), fim = Sys.Date()
     dplyr::distinct(codigo, .keep_all = TRUE)
 }
 
+#' Ler classes da TPU
+#' 
+#' Retorna os códigos da classe origem mais antiga da TPU
+#' 
+#' @param ini Data de início, por default o dia de hoje
+#' @param fim Data de fim, por default o dia de hoje
+#' 
+#' @return Retorna tibble com 5 colunas:
+#' 
+#' @examples tpu_classe_read("execução", ini = "2023-01-01", fim = "2023-02-01")
+#'
+#' @export
+tpu_classe_all_busca <- function(busca = NULL,  ini = Sys.Date(), fim = Sys.Date()) {
+  classes <- readr::read_csv(system.file("extdata/classes.csv", package = "tpur"), show_col_types = FALSE)
+  
+  # baixar as TPUs corretas
+  if(!lubridate::is.Date(ini)) {
+    ini <- as.Date(ini)
+  }
+  if(!lubridate::is.Date(fim)) {
+    fim <- as.Date(fim)
+  }
+  
+  periodo <- lubridate::interval(ini, fim)
+  
+  # selecionar os códigos
+  busca <- busca |> 
+    abjutils::rm_accent() |> 
+    stringr::str_to_lower()
+  
+  files <- classes |> 
+    dplyr::mutate(
+      periodo_validade = lubridate::interval(dt_ini, dt_fim),
+      pegar = lubridate::int_overlaps(periodo, periodo_validade)
+    ) |> 
+    dplyr::filter(pegar) |> 
+    dplyr::pull(release)
+  
+  da <- readr::read_csv(files, show_col_types = FALSE)
+  
+  da |> 
+    dplyr::mutate(
+      classe = dplyr::case_when(
+        classe6 != "-" ~ classe6,
+        classe5 != "-" ~ classe5,
+        classe4 != "-" ~ classe4,
+        classe3 != "-" ~ classe3,
+        classe2 != "-" ~ classe2,
+        classe1 != "-" ~ classe1
+      ),
+      classe_tidy = abjutils::rm_accent(classe),
+      classe_tidy = stringr::str_to_lower(classe_tidy),
+      pegar = stringr::str_detect(classe_tidy, busca)
+    )|> 
+    dplyr::filter(pegar)  |> 
+    dplyr::mutate(file = glue::glue("{id}.csv")) |> 
+    dplyr::left_join(classes) |> 
+    dplyr::mutate(
+      dt_ini = format(dt_ini, "%d/%m/%Y"),
+      dt_fim = format(dt_fim, "%d/%m/%Y")
+    ) |> 
+    dplyr::transmute(
+      id,
+      tpu_periodo_validade = glue::glue("de {dt_ini} a {dt_fim}"),
+      codigo, 
+      classe,
+      classe1,
+      classe2,
+      classe3,
+      classe4,
+      classe5,
+      classe6
+    ) |> 
+    dplyr::distinct(codigo, .keep_all = TRUE)
+}
