@@ -638,3 +638,74 @@ tpu_assunto_2_busca <- function(busca = NULL, ini = Sys.Date(), fim = Sys.Date()
     ) |> 
     dplyr::distinct(codigo, .keep_all = TRUE)
 }
+
+#' Busca vetorizada da assuntos de origem da TPU a partir de nomes de assunto
+#'
+#' @param busca Vetor de assuntos a serem buscadas
+#' @param ini Data inicial do período (default: hoje)
+#' @param fim Data final do período (default: hoje)
+#'
+#' @return Tibble 
+#' @export
+tpu_assuntos_busca_vetorizada <- function(busca = NULL, ini = Sys.Date(), fim = Sys.Date()) {
+  
+  assuntos <- readr::read_csv(system.file("extdata/assuntos.csv", package = "tpur"), show_col_types = FALSE)
+  
+  # tratar datas
+  if (!lubridate::is.Date(ini)) ini <- as.Date(ini)
+  if (!lubridate::is.Date(fim)) fim <- as.Date(fim)
+  
+  periodo <- lubridate::interval(ini, fim)
+  
+  # Arquivos válidos
+  files <- assuntos |>
+    dplyr::mutate(
+      periodo_validade = lubridate::interval(dt_ini, dt_fim),
+      pegar = lubridate::int_overlaps(periodo, periodo_validade)
+    ) |>
+    dplyr::filter(pegar) |>
+    dplyr::pull(release)
+  
+  # Leitura dos assuntos da TPU
+  da <- readr::read_csv(files, show_col_types = FALSE)
+  
+  # Definir classe mais específica
+  da <- da |> dplyr::mutate(
+    assunto = dplyr::case_when(
+      assunto6 != "-" ~ assunto6,
+      assunto5 != "-" ~ assunto5,
+      assunto4 != "-" ~ assunto4,
+      assunto3 != "-" ~ assunto3,
+      assunto2 != "-" ~ assunto2,
+      TRUE ~ assunto1
+    ),
+    assunto_tidy = stringr::str_to_lower(abjutils::rm_accent(assunto))
+  ) |> 
+    dplyr::mutate(file = glue::glue("{id}.csv")) |> 
+    dplyr::left_join(assuntos, by = "file") |> 
+    dplyr::mutate(
+      dt_ini = format(dt_ini, "%d/%m/%Y"),
+      dt_fim = format(dt_fim, "%d/%m/%Y")
+    )
+  
+  # Preparar vetor de busca normalizado
+  busca_tidy <- busca |> abjutils::rm_accent() |> stringr::str_to_lower()
+  
+  # Para cada termo na busca, filtrar os dados e adicionar a coluna termo_busca
+  resultados <- da %>%
+    filter(assunto_tidy %in% busca_tidy) |>
+    dplyr::transmute(
+      tpu_periodo_validade = glue::glue("de {dt_ini} a {dt_fim}"),
+      codigo,
+      assunto,
+      assunto_tidy,
+      assunto1,
+      assunto2,
+      assunto3,
+      assunto4,
+      assunto5,
+      assunto6
+    )|> 
+    dplyr::distinct(codigo, .keep_all = TRUE)
+  return(resultados)
+}
