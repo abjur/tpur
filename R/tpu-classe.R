@@ -772,3 +772,59 @@ tpu_classe_1_busca_vetorizada <- function(busca = NULL, ini = Sys.Date(), fim = 
     dplyr::distinct(codigo, .keep_all = TRUE)
   return(resultados)
 }
+
+tpu_classe_1_busca_vetorizada_codigo <- function(buscacodigo = NULL, ini = Sys.Date(), fim = Sys.Date()) {
+  
+  classes <- readr::read_csv(system.file("extdata/classes.csv", package = "tpur"), show_col_types = FALSE)
+  
+  # tratar datas
+  if (!lubridate::is.Date(ini)) ini <- as.Date(ini)
+  if (!lubridate::is.Date(fim)) fim <- as.Date(fim)
+  
+  periodo <- lubridate::interval(ini, fim)
+  
+  # Arquivos válidos
+  files <- classes |>
+    dplyr::mutate(
+      periodo_validade = lubridate::interval(dt_ini, dt_fim),
+      pegar = lubridate::int_overlaps(periodo, periodo_validade)
+    ) |>
+    dplyr::filter(pegar) |>
+    dplyr::pull(release)
+  
+  # Leitura das classes da TPU
+  da <- readr::read_csv(files, show_col_types = FALSE)
+  
+  # Definir classe mais específica
+  da <- da |> dplyr::mutate(
+    classe = dplyr::case_when(
+      classe6 != "-" ~ classe6,
+      classe5 != "-" ~ classe5,
+      classe4 != "-" ~ classe4,
+      classe3 != "-" ~ classe3,
+      classe2 != "-" ~ classe2,
+      TRUE ~ classe1
+    ),
+    classe_tidy = stringr::str_to_lower(abjutils::rm_accent(classe))
+  ) |> 
+    dplyr::mutate(file = glue::glue("{id}.csv")) |> 
+    dplyr::left_join(classes, by = "file") |> 
+    dplyr::mutate(
+      dt_ini = format(dt_ini, "%d/%m/%Y"),
+      dt_fim = format(dt_fim, "%d/%m/%Y")
+    )
+  
+
+  # Para cada termo na busca, filtrar os dados e adicionar a coluna termo_busca
+  resultados <- da |>
+    dplyr::filter(codigo %in% buscacodigo)  |> 
+    dplyr::transmute(
+      tpu_periodo_validade = glue::glue("de {dt_ini} a {dt_fim}"),
+      codigo,
+      classe,
+      classe_tidy,
+      classe1
+    )|> 
+    dplyr::distinct(codigo, .keep_all = TRUE)
+  return(resultados)
+}
