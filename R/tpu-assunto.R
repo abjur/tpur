@@ -210,6 +210,7 @@ tpu_assunto_parse <- function(file) {
       dplyr::left_join(assunto1_ids) |> 
       tidyr::fill(id, .direction="down") |> 
       dplyr::group_by(id) |> 
+      dplyr::slice_head(n = 11) |>
       dplyr::mutate(
         colname = 1:n_col,
         colname = dplyr::case_when(
